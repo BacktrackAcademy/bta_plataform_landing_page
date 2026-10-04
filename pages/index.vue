@@ -38,6 +38,7 @@ useSeoMeta({
 // The landing is public: the logged-in demo of the learning path is not shown here
 const loggedIn = computed(() => false)
 const platformUrl = usePlatformUrl()
+const { signupUrl } = useAppLinks()
 
 const why = [
   { n: '01', t: 'Sigue nuestra ruta de aprendizaje', d: 'Nuestras especialidades están preparadas por expertos en ciberseguridad con un enfoque teórico-práctico.' },
@@ -145,10 +146,10 @@ const btnGhost = 'inline-flex h-12 items-center justify-center gap-2 rounded-md 
             <NuxtLink v-if="loggedIn" :to="platformUrl('/dashboard')" :class="btnPrimary">
               Continuar estudiando <ArrowRight :size="18" />
             </NuxtLink>
-            <NuxtLink v-else :to="platformUrl('/crear-cuenta')" :class="btnPrimary">
+            <NuxtLink v-else :to="signupUrl()" :class="btnPrimary">
               Regístrate ahora <ArrowRight :size="18" />
             </NuxtLink>
-            <NuxtLink :to="platformUrl('/cursos')" :class="btnGhost">
+            <NuxtLink to="/cursos" :class="btnGhost">
               Explorar cursos
             </NuxtLink>
           </div>
@@ -245,7 +246,7 @@ const btnGhost = 'inline-flex h-12 items-center justify-center gap-2 rounded-md 
               Aprenderás: <span class="text-white">{{ cur.skills.join(', ') }}</span>
             </p>
             <div class="mt-2">
-              <NuxtLink :to="platformUrl('/cursos')" :class="curStatus === 'done' ? btnOutline : btnPrimary">
+              <NuxtLink to="/cursos" :class="curStatus === 'done' ? btnOutline : btnPrimary">
                 {{ ctaLabel }} <ArrowRight :size="18" />
               </NuxtLink>
             </div>
@@ -273,7 +274,7 @@ const btnGhost = 'inline-flex h-12 items-center justify-center gap-2 rounded-md 
               Últimos cursos lanzados
             </h2>
           </div>
-          <NuxtLink :to="platformUrl('/cursos')" class="flex items-center gap-1.5 text-[15px] font-medium text-white hover:text-bta-pink">
+          <NuxtLink to="/cursos" class="flex items-center gap-1.5 text-[15px] font-medium text-white hover:text-bta-pink">
             Ver catálogo de cursos <ArrowRight :size="16" />
           </NuxtLink>
         </div>
@@ -380,7 +381,7 @@ const btnGhost = 'inline-flex h-12 items-center justify-center gap-2 rounded-md 
                 </li>
               </ul>
             </button>
-            <NuxtLink :to="platformUrl('/suscripciones')" :class="activePlan === p.id ? btnPrimary : btnOutline">
+            <NuxtLink to="/precios" :class="activePlan === p.id ? btnPrimary : btnOutline">
               Comprar plan
             </NuxtLink>
           </div>
@@ -397,7 +398,7 @@ const btnGhost = 'inline-flex h-12 items-center justify-center gap-2 rounded-md 
         <h2 class="max-w-[820px] text-balance font-oswald text-[clamp(40px,5.6vw,84px)] font-semibold uppercase leading-[.98]">
           Recibe orientación y apoyo de nuestros <span class="text-bta-pink">mentores</span>
         </h2>
-        <NuxtLink :to="platformUrl('/crear-cuenta')" :class="btnPrimary">
+        <NuxtLink :to="signupUrl()" :class="btnPrimary">
           Regístrate ahora <ArrowRight :size="18" />
         </NuxtLink>
       </div>

@@ -14,7 +14,6 @@ export interface HomeCourse {
 }
 
 const props = defineProps<{ course: HomeCourse }>()
-const platformUrl = usePlatformUrl()
 
 const LEVELS = {
   beginner: { label: 'Principiante', bars: 1 },
@@ -28,7 +27,7 @@ const students = computed(() => props.course.students.toLocaleString('es-CL'))
 
 <template>
   <NuxtLink
-    :to="platformUrl(`/cursos/${course.slug}`)"
+    :to="`/curso/${course.slug}`"
     class="group flex flex-col overflow-hidden rounded-lg border border-gray-border bg-bta-section text-white transition-colors duration-200 hover:border-white/30"
   >
     <div class="relative aspect-video overflow-hidden border-b border-white/5 bg-white/5">

@@ -1,76 +1,72 @@
 <script setup lang="ts">
 import { HamburgerAnimatedButton } from '#components'
 
-const platformUrl = usePlatformUrl()
-const hamburgerMenuIsOpen = ref(false)
+const { loginUrl, signupUrl } = useAppLinks()
+const route = useRoute()
+const menuOpen = ref(false)
+
+// Secciones del sitio público; las fichas (/curso/x, /articulo/x) marcan su sección como activa.
 const links = [
-  { name: 'Cursos', url: '/cursos' },
-  { name: 'Artículos', url: '/articulos' },
-  { name: 'Debates', url: '/debates' },
-  { name: 'Noticias', url: '/noticias' },
+  { name: 'Cursos', to: '/cursos', match: ['/cursos', '/curso'] },
+  { name: 'Especialidades', to: '/especialidades', match: ['/especialidades', '/especialidad'] },
+  { name: 'Artículos', to: '/articulos', match: ['/articulos', '/articulo', '/autor'] },
+  { name: 'Precios', to: '/precios', match: ['/precios'] },
 ]
 
-function closeBurgerMenu() {
-  hamburgerMenuIsOpen.value = false
+function isActive(match: string[]) {
+  return match.some(m => route.path === m || route.path.startsWith(`${m}/`))
 }
-function toggleBurgerMenu() {
-  hamburgerMenuIsOpen.value = !hamburgerMenuIsOpen.value
-}
+
+watch(() => route.fullPath, () => (menuOpen.value = false))
 </script>
 
 <template>
-  <nav class="relative h-20 z-[999999]">
-    <div
-      :class="{ ' -translate-y-[300%]': !hamburgerMenuIsOpen }"
-      class="fixed lg:hidden w-full bg-bta-dark-blue top-20 left-0 z-90 overflow-y-scroll h-[calc(100vh-5rem)] duration-500"
-    >
-      <HamburgerMenu @close="closeBurgerMenu" />
-    </div>
-    <div
-      class="fixed top-0 left-0 w-full bg-bta-dark-blue"
-    >
-      <div class="container flex gap-6 items-center h-20">
-        <div @click.prevent="closeBurgerMenu">
-          <NuxtLink to="/">
-            <img class="w-32" src="~/assets/logo.svg" alt="logo">
-          </NuxtLink>
-        </div>
-        <div
-          class="hidden lg:grid grid-flow-col auto-cols-auto items-center justify-items-center gap-8 ml-auto uppercase text-sm"
-        >
+  <header class="relative z-50 h-20">
+    <div class="fixed left-0 top-0 w-full border-b border-white/5 bg-bta-dark-blue">
+      <nav class="container flex h-20 items-center gap-6" aria-label="Principal">
+        <NuxtLink to="/" class="shrink-0" aria-label="Backtrack Academy, inicio">
+          <img class="w-32" src="~/assets/logo.svg" alt="Backtrack Academy" width="128" height="32">
+        </NuxtLink>
+
+        <div class="ml-auto hidden items-center gap-8 font-oswald text-sm uppercase lg:flex">
           <NuxtLink
-            v-for="(link, key) in links"
-            :key="key"
-            :to="platformUrl(link.url)"
+            v-for="link in links"
+            :key="link.to"
+            :to="link.to"
             class="nav__link"
+            :aria-current="isActive(link.match) ? 'page' : undefined"
+            :class="{ 'is-active': isActive(link.match) }"
           >
-            <span class="relative text-white">
-              {{ link.name }}
-            </span>
+            {{ link.name }}
           </NuxtLink>
-          <NuxtLink
-            :to="platformUrl('/login')"
-            class="shadow-md shadow-bta-pink/50 text-white font-oswald border-bta-pink border px-3 py-1 flex-shrink-0"
+          <a :href="loginUrl()" class="nav__link">Iniciar sesión</a>
+          <a
+            :href="signupUrl()"
+            class="rounded-md bg-[#D60E6A] px-4 py-2 text-white transition-colors duration-200 hover:bg-[#B80C5B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink focus-visible:ring-offset-2 focus-visible:ring-offset-bta-dark-blue"
           >
-            Vuélvete Pro!
-          </NuxtLink>
-          <NuxtLink :to="platformUrl('/login')" class="nav__link">
-            <span>
-              Iniciar sesión
-            </span>
-          </NuxtLink>
+            Empezar ahora
+          </a>
         </div>
-        <HamburgerAnimatedButton
-          :state="hamburgerMenuIsOpen"
-          @toggle="toggleBurgerMenu"
-        />
-      </div>
+
+        <HamburgerAnimatedButton :state="menuOpen" @toggle="menuOpen = !menuOpen" />
+      </nav>
     </div>
-  </nav>
+
+    <div
+      class="fixed left-0 top-20 z-40 h-[calc(100dvh-5rem)] w-full overflow-y-auto bg-bta-dark-blue transition-transform duration-300 lg:hidden"
+      :class="menuOpen ? 'translate-y-0' : '-translate-y-[120%]'"
+      :inert="!menuOpen"
+    >
+      <HamburgerMenu :links="links" @close="menuOpen = false" />
+    </div>
+  </header>
 </template>
 
 <style scoped>
 .nav__link {
-  @apply text-center text-white font-oswald relative before:block before:absolute before:bottom-0 before:left-0 before:h-0.5 before:w-full before:bg-bta-pink before:scale-x-0 before:transition-all hover:before:scale-x-100;
+  @apply relative text-center text-white before:absolute before:bottom-0 before:left-0 before:block before:h-0.5 before:w-full before:origin-left before:scale-x-0 before:bg-bta-pink before:transition-transform hover:before:scale-x-100;
+}
+.nav__link.is-active {
+  @apply before:scale-x-100;
 }
 </style>

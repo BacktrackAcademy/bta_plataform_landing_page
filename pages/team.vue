@@ -1,5 +1,4 @@
 <script setup lang="ts">
-const platformUrl = usePlatformUrl()
 useSeoMeta({
   title: 'Conoce nuestro equipo',
   description: 'El equipo que hace posible que las cosas pasen en Backtrack Academy.',
@@ -52,7 +51,7 @@ function avatar(url: string) {
           <p class="font-inconsolata text-lg text-gray-200 py-6">
             El equipo que hace posible que las cosas pasen.
           </p>
-          <NuxtLink :to="platformUrl('/crear-cuenta')" class="inline-block font-oswald uppercase text-white bg-bta-pink py-3 px-5 duration-200 transition-all hover:bg-bta-pink/80">
+          <NuxtLink to="/cursos" class="inline-block font-oswald uppercase text-white bg-bta-pink py-3 px-5 duration-200 transition-all hover:bg-bta-pink/80">
             Conoce nuestro trabajo
           </NuxtLink>
         </div>

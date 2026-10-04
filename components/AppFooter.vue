@@ -1,6 +1,25 @@
 <script setup lang="ts">
 import BTALogo from './icons/BTALogo.vue'
 import Mail from './icons/Mail.vue'
+
+const explore = [
+  { name: 'Cursos', to: '/cursos' },
+  { name: 'Especialidades', to: '/especialidades' },
+  { name: 'Artículos', to: '/articulos' },
+  { name: 'Precios', to: '/precios' },
+]
+const academy = [
+  { name: 'Nosotros', to: '/team' },
+  { name: 'Patrocinios', to: '/sponsorship' },
+  { name: 'Seguridad', to: '/security' },
+  { name: 'Preguntas frecuentes', to: '/preguntas-frecuentes' },
+  { name: 'Valida tu certificado', to: '/validate_certificate' },
+]
+const legal = [
+  { name: 'Políticas de privacidad', to: '/privacy_policy' },
+  { name: 'Términos de servicio', to: '/terms_of_use' },
+]
+const year = new Date().getFullYear()
 </script>
 
 <template>
@@ -19,37 +38,24 @@ import Mail from './icons/Mail.vue'
       </NuxtLink>
       <div class="font-inconsolata text-lg md:text-left">
         <h3 class="font-oswald mb-6 text-2xl font-normal text-gray-200 uppercase">
-          Recursos
+          Explora
         </h3>
         <ul>
-          <li class="mb-4">
-            <NuxtLink to="/" class="foot__link">
-              Empresas
+          <li v-for="l in explore" :key="l.to" class="mb-4 last:mb-0">
+            <NuxtLink :to="l.to" class="foot__link">
+              {{ l.name }}
             </NuxtLink>
           </li>
-          <li class="mb-4">
-            <NuxtLink to="/" class="foot__link">
-              Usuarios
-            </NuxtLink>
-          </li>
-          <li class="mb-4">
-            <NuxtLink to="/" class="foot__link">
-              Cursos Gratis
-            </NuxtLink>
-          </li>
-          <li class="mb-4">
-            <NuxtLink to="/team" class="foot__link">
-              Nosotros
-            </NuxtLink>
-          </li>
-          <li class="mb-4">
-            <NuxtLink to="/sponsorship" class="foot__link">
-              Patrocinios
-            </NuxtLink>
-          </li>
-          <li>
-            <NuxtLink to="/" class="foot__link">
-              Catálogo de Cursos
+        </ul>
+      </div>
+      <div class="font-inconsolata text-lg md:text-left">
+        <h3 class="font-oswald mb-6 text-2xl font-normal text-gray-200 uppercase">
+          Academia
+        </h3>
+        <ul>
+          <li v-for="l in academy" :key="l.to" class="mb-4 last:mb-0">
+            <NuxtLink :to="l.to" class="foot__link">
+              {{ l.name }}
             </NuxtLink>
           </li>
         </ul>
@@ -59,31 +65,9 @@ import Mail from './icons/Mail.vue'
           Legal
         </h3>
         <ul>
-          <li class="mb-4">
-            <NuxtLink to="/privacy_policy" class="foot__link">
-              Políticas de Privacidad
-            </NuxtLink>
-          </li>
-          <li class="mb-8">
-            <NuxtLink to="/terms_of_use" class="foot__link">
-              Términos de servicio
-            </NuxtLink>
-          </li>
-        </ul>
-        <ul>
-          <li class="mb-4">
-            <NuxtLink to="/" class="foot__link">
-              Ranking
-            </NuxtLink>
-          </li>
-          <li class="mb-4">
-            <NuxtLink to="/preguntas-frecuentes" class="foot__link">
-              Preguntas Frecuentes
-            </NuxtLink>
-          </li>
-          <li>
-            <NuxtLink to="/validate_certificate" class="foot__link">
-              Valida tus certificado
+          <li v-for="l in legal" :key="l.to" class="mb-4 last:mb-0">
+            <NuxtLink :to="l.to" class="foot__link">
+              {{ l.name }}
             </NuxtLink>
           </li>
         </ul>
@@ -142,7 +126,7 @@ import Mail from './icons/Mail.vue'
       </div>
       <span class="text-sm text-gray-500 text-center">
         <a href="#" class="">
-          © 2025 Backtrack Academy. · Av. Lib. O’Higgis #1302 70,
+          © {{ year }} Backtrack Academy. · Av. Lib. O’Higgis #1302 70,
           Santiago,Chile. <br>
           Todos los Derechos Reservados.
         </a>

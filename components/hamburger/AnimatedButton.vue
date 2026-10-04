@@ -13,10 +13,13 @@ defineEmits<{
     <div class="flex flex-col justify-center">
       <div class="relative sm:max-w-xl mx-auto">
         <button
-          class="text-white w-10 h-10 relative focus:outline-none"
+          type="button"
+          class="text-white w-10 h-10 relative focus:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink"
+          :aria-expanded="state"
+          aria-label="Menú principal"
           @click="$emit('toggle')"
         >
-          <span class="sr-only">Abrir menú principal</span>
+          <span class="sr-only">{{ state ? 'Cerrar menú' : 'Abrir menú' }}</span>
           <div class="block w-5 absolute top-1/2 transform ">
             <span
               aria-hidden="true"
