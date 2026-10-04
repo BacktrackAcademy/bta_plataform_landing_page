@@ -7,12 +7,12 @@ const MIN_INDEXABLE = 2
 
 const one = (v: LocationQueryValue | LocationQueryValue[] | undefined) => (Array.isArray(v) ? v[0] : v) || ''
 
-export type CourseFacet = { type: 'tema' | 'especialidad', slug: string }
+export type CourseFacet = { type: 'tema' | 'especialidad' | 'nivel', slug: string }
 
 /**
  * Datos + SEO compartidos por /cursos, /cursos/tema/:slug y /cursos/especialidad/:slug.
- * Tema y especialidad son RUTAS (indexables, en el sitemap). Búsqueda, nivel y "solo gratuitos" siguen en la
- * query (?q=&nivel=&gratis=1) y no se indexan. Facet inexistente o ?pagina= fuera de rango → 404 real.
+ * Tema, especialidad y nivel son RUTAS (indexables, en el sitemap). Búsqueda y "solo gratuitos" siguen en la
+ * query (?q=&gratis=1) y no se indexan. Facet inexistente o ?pagina= fuera de rango → 404 real.
  */
 export function useCoursesListing(facet?: CourseFacet) {
   const route = useRoute()
@@ -22,11 +22,10 @@ export function useCoursesListing(facet?: CourseFacet) {
   const basePath = facet ? `/cursos/${facet.type}/${facet.slug}` : '/cursos'
   const state = computed(() => ({
     q: one(route.query.q).slice(0, 100),
-    nivel: one(route.query.nivel),
     gratis: one(route.query.gratis) === '1',
     pagina: Math.max(1, Number.parseInt(one(route.query.pagina)) || 1),
   }))
-  const hasFilters = computed(() => !!(state.value.q || state.value.nivel || state.value.gratis))
+  const hasFilters = computed(() => !!(state.value.q || state.value.gratis))
 
   // Sin `await` aquí (se perdería el contexto de Nuxt para useSeo): la página hace `await listing.ready`.
   const filtersReq = usePublicApi<PublicFilters>('/filters')
@@ -35,7 +34,7 @@ export function useCoursesListing(facet?: CourseFacet) {
       per_page: PER_PAGE,
       page: state.value.pagina,
       q: state.value.q || undefined,
-      level: state.value.nivel || undefined,
+      level: facet?.type === 'nivel' ? facet.slug : undefined,
       free: state.value.gratis ? 'true' : undefined,
       specialty: facet?.type === 'especialidad' ? facet.slug : undefined,
       category: facet?.type === 'tema' ? facet.slug : undefined,
@@ -49,7 +48,7 @@ export function useCoursesListing(facet?: CourseFacet) {
   const facetName = computed(() => {
     if (!facet)
       return ''
-    const list = facet.type === 'tema' ? filters.value?.categories : filters.value?.specialties
+    const list = facet.type === 'tema' ? filters.value?.categories : facet.type === 'nivel' ? filters.value?.levels : filters.value?.specialties
     return list?.find(i => i.slug === facet.slug)?.name.trim() ?? ''
   })
 
@@ -59,11 +58,15 @@ export function useCoursesListing(facet?: CourseFacet) {
   const heading = computed(() => {
     if (!facet)
       return 'Aprende ciberseguridad haciendo'
+    if (facet.type === 'nivel')
+      return `Cursos de nivel ${facetName.value}`
     return facet.type === 'tema' ? `Cursos de ${facetName.value}` : `Cursos de la especialidad ${facetName.value}`
   })
   const intro = computed(() => {
     if (!facet)
       return 'Cursos prácticos creados por profesionales de la industria. Explora por especialidad o por tema.'
+    if (facet.type === 'nivel')
+      return `Cursos de ciberseguridad de nivel ${facetName.value.toLowerCase()}, creados por profesionales de la industria. Elige según tu experiencia.`
     return facet.type === 'tema'
       ? `Cursos prácticos de ${facetName.value} creados por profesionales de la industria, con teoría, práctica y certificado.`
       : `Todos los cursos de la especialidad ${facetName.value}, creados por profesionales de la industria.`
@@ -84,7 +87,9 @@ export function useCoursesListing(facet?: CourseFacet) {
 
   useSeo(() => ({
     title: facet
-      ? (facet.type === 'tema' ? `Cursos de ${facetName.value}: hacking ético y ciberseguridad` : `Cursos de ${facetName.value}`)
+      ? (facet.type === 'tema'
+          ? `Cursos de ${facetName.value}: hacking ético y ciberseguridad`
+          : facet.type === 'nivel' ? `Cursos de ciberseguridad nivel ${facetName.value}` : `Cursos de ${facetName.value}`)
       : 'Cursos de ciberseguridad y hacking ético',
     description: facet
       ? `${intro.value} Empieza hoy en Backtrack Academy.`

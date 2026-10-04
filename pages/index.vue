@@ -10,18 +10,6 @@ interface Opinion {
   course: { titulo: string, slug: string }
 }
 
-interface Plan {
-  id: number
-  name: string
-  price: number
-  old_price: number
-  monthly_price: number | null
-  discount_percent: number
-  recommended: boolean
-  opportunities: number
-  vouchers: number
-}
-
 useSeo({
   title: 'Formación avanzada en ciberseguridad',
   description: 'Especialidades y cursos de hacking ético y ciberseguridad con instructores de la industria. Aprende con teoría, práctica y certificados.',
@@ -67,18 +55,6 @@ const why = [
   { n: '03', t: 'Recibe orientación y apoyo', d: 'Nuestros mentores están al tanto de tu avance, te guían por el camino indicado y te motivan a cumplir tus objetivos.' },
 ]
 
-// Filas fijas de beneficios por posición (anual, semestral, mensual), como en la tabla anterior
-function planFeatures(p: Plan, i: number): [string, boolean][] {
-  return [
-    ['Acceso a todos nuestros cursos', true],
-    [`${p.opportunities} oportunidades para exámenes`, true],
-    [['2 especialidades a elección', '1 especialidad a elección', 'Especialidades'][i] ?? 'Especialidades', i < 2],
-    [`${p.vouchers} vouchers para especialidades`, p.vouchers > 0],
-    ['Certificados de aprobación', true],
-    ['Estudia con acompañamiento', i < 2],
-    ['Comunidad en Discord', i < 2],
-  ]
-}
 const plans = computed(() => apiPlans.value ?? [])
 const selectedPlan = ref<number | null>(null)
 const activePlan = computed(() => selectedPlan.value ?? plans.value.find(p => p.recommended)?.id)

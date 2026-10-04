@@ -7,6 +7,9 @@ if (only('tema'))
 if (only('especialidad'))
   await navigateTo(`/cursos/especialidad/${encodeURIComponent(String(q.especialidad))}`, { redirectCode: 301 })
 
+if (only('nivel'))
+  await navigateTo(`/cursos/nivel/${encodeURIComponent(String(q.nivel))}`, { redirectCode: 301 })
+
 const listing = useCoursesListing()
 await listing.ready
 </script>

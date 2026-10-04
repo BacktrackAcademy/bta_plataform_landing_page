@@ -25,7 +25,7 @@ const field = 'h-10 rounded-md border border-gray-border bg-bta-section px-3 tex
 const link = 'flex items-center justify-between gap-3 rounded px-2.5 py-1.5 text-[13px] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink'
 const on = 'bg-bta-pink/15 text-white'
 const off = 'text-white/60 hover:bg-white/5 hover:text-white'
-const isActive = (type: 'tema' | 'especialidad', slug: string) => props.l.facet?.type === type && props.l.facet.slug === slug
+const isActive = (type: 'tema' | 'especialidad' | 'nivel', slug: string) => props.l.facet?.type === type && props.l.facet.slug === slug
 </script>
 
 <template>
@@ -57,6 +57,20 @@ const isActive = (type: 'tema' | 'especialidad', slug: string) => props.l.facet?
             <NuxtLink to="/cursos" :class="[link, !l.facet ? on : off]" :aria-current="!l.facet ? 'page' : undefined">
               <span class="font-medium">Todos los cursos</span>
             </NuxtLink>
+
+            <details v-if="l.levels.length" open class="group border-t border-white/10 pt-4">
+              <summary class="flex cursor-pointer list-none items-center justify-between font-oswald text-sm uppercase tracking-wide text-white">
+                <span><span class="text-bta-pink" aria-hidden="true">./</span>Nivel</span>
+                <span class="text-white/40 transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
+              </summary>
+              <ul class="mt-3 flex flex-col gap-0.5">
+                <li v-for="n in l.levels" :key="n.slug">
+                  <NuxtLink :to="`/cursos/nivel/${n.slug}`" :class="[link, isActive('nivel', n.slug) ? on : off]" :aria-current="isActive('nivel', n.slug) ? 'page' : undefined">
+                    <span>{{ n.name }}</span><span class="text-white/35">{{ n.courses_count }}</span>
+                  </NuxtLink>
+                </li>
+              </ul>
+            </details>
 
             <details v-if="l.specialties.length" open class="group border-t border-white/10 pt-4">
               <summary class="flex cursor-pointer list-none items-center justify-between font-oswald text-sm uppercase tracking-wide text-white">
@@ -90,18 +104,9 @@ const isActive = (type: 'tema' | 'especialidad', slug: string) => props.l.facet?
 
         <!-- LISTADO -->
         <div class="min-w-0">
-          <form class="flex flex-wrap items-center gap-3" role="search" aria-label="Filtrar cursos" @submit.prevent="l.go({ q: search.trim() || undefined })">
+          <form class="flex flex-wrap items-center gap-3" role="search" aria-label="Buscar cursos" @submit.prevent="l.go({ q: search.trim() || undefined })">
             <label class="sr-only" for="f-q">Buscar curso</label>
             <input id="f-q" v-model="search" type="search" placeholder="Buscar curso…" class="min-w-[200px] flex-1" :class="field">
-            <label class="sr-only" for="f-niv">Nivel</label>
-            <select id="f-niv" :class="field" :value="l.state.nivel" @change="l.go({ nivel: ($event.target as HTMLSelectElement).value })">
-              <option value="">
-                Todos los niveles
-              </option>
-              <option v-for="o in l.levels" :key="o.slug" :value="o.slug">
-                {{ o.name }} ({{ o.courses_count }})
-              </option>
-            </select>
           </form>
 
           <div class="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-white/60" aria-live="polite">
@@ -113,7 +118,7 @@ const isActive = (type: 'tema' | 'especialidad', slug: string) => props.l.facet?
                 <input type="checkbox" class="size-4 accent-[#EC1075]" :checked="l.state.gratis" @change="l.go({ gratis: ($event.target as HTMLInputElement).checked ? '1' : undefined })">
                 Solo gratuitos
               </label>
-              <button v-if="l.hasFilters" type="button" class="text-bta-pink hover:underline" @click="l.go({ q: undefined, nivel: undefined, gratis: undefined })">
+              <button v-if="l.hasFilters" type="button" class="text-bta-pink hover:underline" @click="l.go({ q: undefined, gratis: undefined })">
                 Limpiar filtros
               </button>
             </div>

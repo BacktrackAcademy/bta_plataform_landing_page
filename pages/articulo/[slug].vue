@@ -68,7 +68,7 @@ const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
       />
 
       <!-- CABECERA -->
-      <header class="mx-auto mt-10 max-w-[760px]">
+      <header class="mt-10 max-w-[900px]">
         <NuxtLink v-if="a.category" :to="`/articulos/categoria/${a.category.slug}`" class="font-oswald text-xs font-medium uppercase tracking-[.12em] text-bta-pink hover:underline">
           {{ a.category.name }}
         </NuxtLink>
@@ -91,12 +91,12 @@ const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
         </div>
       </header>
 
-      <figure v-if="a.image_url" class="mx-auto mt-10 max-w-[960px] overflow-hidden rounded-lg border border-white/5 bg-white/5">
-        <img :src="a.image_url" :alt="a.title" width="960" height="540" fetchpriority="high" decoding="async" class="aspect-[16/9] w-full object-cover">
+      <figure v-if="a.image_url" class="mt-10 overflow-hidden rounded-lg border border-white/5 bg-white/5">
+        <img :src="a.image_url" :alt="a.title" width="960" height="540" fetchpriority="high" decoding="async" class="aspect-[16/9] max-h-[520px] w-full object-cover md:aspect-[21/9]">
       </figure>
 
       <!-- CUERPO + TABLA DE CONTENIDOS -->
-      <div class="mt-12 grid gap-x-12 gap-y-8 lg:grid-cols-[240px_minmax(0,720px)] lg:justify-center">
+      <div class="mt-12 grid gap-x-12 gap-y-8" :class="showToc ? 'lg:grid-cols-[240px_minmax(0,840px)]' : 'lg:grid-cols-[minmax(0,840px)]'">
         <aside v-if="showToc" class="lg:order-first">
           <details class="rounded-lg border border-gray-border bg-bta-section lg:sticky lg:top-28 lg:border-0 lg:bg-transparent" open>
             <summary class="cursor-pointer list-none px-4 py-3 font-oswald text-sm uppercase tracking-[.08em] text-white/70 lg:cursor-default lg:px-0 lg:pt-0">
@@ -109,7 +109,7 @@ const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
             </ol>
           </details>
         </aside>
-        <div class="min-w-0" :class="showToc ? '' : 'lg:col-start-2'">
+        <div class="min-w-0">
           <CatalogRichText v-if="body.html" :html="body.html" class="prose-lg prose-headings:scroll-mt-28 prose-img:rounded-lg prose-pre:overflow-x-auto" />
 
           <!-- CTA hacia la academia -->
