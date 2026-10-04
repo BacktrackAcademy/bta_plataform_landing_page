@@ -1,6 +1,6 @@
 <script lang="ts">
-// Estado compartido entre todas las instancias: solo la sección con más área visible anima el escaneo,
-// así nunca hay dos líneas de escaneo a la vez.
+// Estado compartido entre todas las instancias: marca como activa la sección con más área visible
+// (data-active; hoy sin efecto visual, el escaneo se retiró).
 import { ref } from 'vue'
 
 const visiblePx = new Map<symbol, number>()
@@ -104,7 +104,6 @@ onMounted(() => {
   >
     <CyberGlow :side="glow" />
     <CyberGrid />
-    <div class="cy-scan" />
     <div class="cy-layer" :data-fading="fading">
       <CyberNetworkTopology v-if="variant === 'topology'" :key="`t${cycle}`" :flip="flip" />
       <CyberTerminalFragment v-for="(f, i) in items" :key="`${cycle}-${i}`" :fragment="f" :flip="flip" />
@@ -189,17 +188,6 @@ onMounted(() => {
 .cy-layer[data-fading='true'] { opacity: 0; transition: opacity 0.9s ease; }
 .cy-layer { transition: opacity 0.6s ease; }
 
-/* línea de escaneo muy fina que cruza la sección despacio */
-.cy-scan {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 120px;
-  background: linear-gradient(to bottom, transparent, rgba(236, 16, 117, 0.07) 70%, rgba(236, 16, 117, 0.22) 100%);
-  border-bottom: 1px solid rgba(236, 16, 117, 0.25);
-  opacity: 0;
-}
 .cy-title {
   margin: 0 0 6px;
   font-size: 10px;
@@ -246,7 +234,6 @@ onMounted(() => {
   .cy-cursor { animation: cy-blink 1.2s steps(2, start) infinite; animation-play-state: paused; }
   .cy[data-inview='true'] .cy-cursor { animation-play-state: running; }
 
-  .cy[data-active='true'] .cy-scan { animation: cy-sweep 9s linear infinite; }
   .cy-glow { animation: cy-breathe 18s ease-in-out infinite alternate; animation-play-state: paused; }
   .cy[data-inview='true'] .cy-glow { animation-play-state: running; }
 }
@@ -263,7 +250,6 @@ onMounted(() => {
   }
 }
 
-@keyframes cy-sweep { 0% { transform: translateY(-120px); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(100cqh); opacity: 0; } }
 @keyframes cy-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes cy-type { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
 @keyframes cy-blink { to { opacity: 0; } }
