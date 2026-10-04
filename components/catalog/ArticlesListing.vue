@@ -13,7 +13,6 @@ const props = defineProps<{
   crumbs: { name: string, to?: string }[]
 }>()
 
-const chip = 'inline-flex h-9 items-center rounded-full border px-4 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink'
 const featured = computed(() => (props.pagination?.current_page === 1 ? props.articles[0] : undefined))
 const rest = computed(() => (featured.value ? props.articles.slice(1) : props.articles))
 </script>
@@ -35,20 +34,13 @@ const rest = computed(() => (featured.value ? props.articles.slice(1) : props.ar
         </p>
       </header>
 
-      <nav v-if="categories.length" aria-label="Categorías" class="mt-10 flex flex-wrap gap-2">
-        <NuxtLink to="/articulos" :class="[chip, !activeCategory ? 'border-bta-pink bg-bta-pink/15' : 'border-gray-border hover:bg-white/5']" :aria-current="!activeCategory ? 'page' : undefined">
-          Todos
-        </NuxtLink>
-        <NuxtLink
-          v-for="c in categories"
-          :key="c.slug"
-          :to="`/articulos/categoria/${c.slug}`"
-          :class="[chip, activeCategory === c.slug ? 'border-bta-pink bg-bta-pink/15' : 'border-gray-border hover:bg-white/5']"
-          :aria-current="activeCategory === c.slug ? 'page' : undefined"
-        >
-          {{ c.name }} <span class="ml-1.5 text-white/45">{{ c.articles_count }}</span>
-        </NuxtLink>
-      </nav>
+      <CatalogCategoryNav
+        v-if="categories.length"
+        :items="categories.map(c => ({ slug: c.slug, name: c.name, count: c.articles_count }))"
+        all-to="/articulos"
+        base-path="/articulos/categoria"
+        :active="activeCategory"
+      />
 
       <template v-if="articles.length">
         <NuxtLink

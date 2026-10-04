@@ -17,5 +17,7 @@ export interface SpecialtyCourse {
   slug: string
   title: string
   is_free: boolean
+  /** Ícono del curso (blanco sobre transparente). Puede faltar: el nodo cae a un punto. */
+  icon_url?: string | null
   duration_seconds: number
 }

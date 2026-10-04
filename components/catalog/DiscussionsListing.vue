@@ -15,7 +15,6 @@ defineProps<{
 }>()
 
 const { signupUrl } = useAppLinks()
-const chip = 'inline-flex h-9 items-center rounded-full border px-4 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink'
 </script>
 
 <template>
@@ -38,20 +37,13 @@ const chip = 'inline-flex h-9 items-center rounded-full border px-4 text-sm tran
         <a :href="signupUrl('/debates')" class="inline-flex h-12 items-center rounded-md bg-[#D60E6A] px-6 font-medium text-white transition-colors hover:bg-[#B80C5B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink">Hacer una pregunta</a>
       </header>
 
-      <nav v-if="categories.length" aria-label="Categorías" class="mt-10 flex flex-wrap gap-2">
-        <NuxtLink to="/debates" :class="[chip, !activeCategory ? 'border-bta-pink bg-bta-pink/15' : 'border-gray-border hover:bg-white/5']" :aria-current="!activeCategory ? 'page' : undefined">
-          Todos
-        </NuxtLink>
-        <NuxtLink
-          v-for="c in categories"
-          :key="c.slug"
-          :to="`/debates/categoria/${c.slug}`"
-          :class="[chip, activeCategory === c.slug ? 'border-bta-pink bg-bta-pink/15' : 'border-gray-border hover:bg-white/5']"
-          :aria-current="activeCategory === c.slug ? 'page' : undefined"
-        >
-          {{ c.name }} <span class="ml-1.5 text-white/45">{{ c.discussions_count }}</span>
-        </NuxtLink>
-      </nav>
+      <CatalogCategoryNav
+        v-if="categories.length"
+        :items="categories.map(c => ({ slug: c.slug, name: c.name, count: c.discussions_count }))"
+        all-to="/debates"
+        base-path="/debates/categoria"
+        :active="activeCategory"
+      />
 
       <ul v-if="discussions.length" class="mt-10 max-w-[1000px] border-t border-gray-border">
         <li v-for="d in discussions" :key="d.slug" class="border-b border-gray-border">

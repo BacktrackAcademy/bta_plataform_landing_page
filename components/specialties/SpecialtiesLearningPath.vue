@@ -21,11 +21,11 @@ const hiddenCount = computed(() => Math.max(0, props.courses.length - COLLAPSED)
         class="path-node group/node relative"
         :class="[i >= COLLAPSED && !expanded ? 'hidden md:block' : 'block']"
       >
-        <!-- conector: vertical en mobile, horizontal en md+ -->
+        <!-- conector: vertical en mobile, horizontal en md+ (sale del borde del círculo) -->
         <span
           v-if="i < courses.length - 1"
           aria-hidden="true"
-          class="absolute left-[5px] top-4 h-full w-px bg-gray-border md:left-4 md:top-[5px] md:h-px md:w-full"
+          class="absolute left-5 top-10 h-full w-px bg-gray-border md:left-10 md:top-5 md:h-px md:w-[calc(100%-2.5rem)]"
         />
         <NuxtLink
           :to="`/curso/${course.slug}`"
@@ -33,10 +33,21 @@ const hiddenCount = computed(() => Math.max(0, props.courses.length - COLLAPSED)
         >
           <span
             aria-hidden="true"
-            class="node-dot relative z-10 mt-1.5 block size-[11px] shrink-0 rounded-full border border-white/50 bg-bta-dark-blue transition-all duration-300 group-hover/node:border-bta-pink group-hover/node:bg-bta-pink group-focus-within/node:border-bta-pink md:mt-0"
+            class="node-dot relative z-10 grid size-10 shrink-0 place-items-center rounded-full border border-white/25 bg-bta-dark-blue transition-all duration-300 group-hover/node:border-bta-pink group-hover/node:shadow-[0_0_14px_-2px_rgba(236,16,117,.6)] group-focus-within/node:border-bta-pink"
             :class="visible ? 'scale-100 opacity-100' : 'scale-50 opacity-0'"
             :style="{ transitionDelay: `${Math.min(i, 8) * 70}ms` }"
-          />
+          >
+            <img
+              v-if="course.icon_url"
+              :src="course.icon_url"
+              alt=""
+              width="20"
+              height="20"
+              loading="lazy"
+              class="size-5 object-contain opacity-80 transition-opacity duration-300 group-hover/node:opacity-100"
+            >
+            <span v-else class="size-[7px] rounded-full bg-white/50 transition-colors duration-300 group-hover/node:bg-bta-pink" />
+          </span>
           <span class="block md:mt-4">
             <span class="block font-inconsolata text-xs text-white/40">{{ String(i + 1).padStart(2, '0') }}</span>
             <span class="mt-0.5 block text-pretty text-sm leading-snug text-white/85 transition-colors duration-200 group-hover/node:text-white group-focus-visible/node:text-white md:line-clamp-3">
