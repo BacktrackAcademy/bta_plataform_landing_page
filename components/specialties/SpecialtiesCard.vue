@@ -46,7 +46,7 @@ const { el, visible } = useReveal()
             {{ specialty.name }}
           </NuxtLink>
         </h2>
-        <p class="mt-4 line-clamp-4 max-w-[520px] text-pretty leading-relaxed text-white/65">
+        <p class="font-plex mt-4 line-clamp-4 max-w-[520px] text-pretty leading-relaxed text-white/65">
           {{ specialty.description }}
         </p>
 

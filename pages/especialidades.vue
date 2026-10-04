@@ -97,7 +97,7 @@ const eyebrow = 'font-oswald text-xs font-medium uppercase tracking-[.12em] text
       <h1 class="mt-3.5 max-w-[860px] text-balance font-oswald text-[clamp(36px,5.2vw,72px)] font-semibold leading-[1.02]">
         Rutas de aprendizaje en <span class="text-bta-pink">ciberseguridad</span>
       </h1>
-      <p class="mt-6 max-w-[560px] text-pretty text-[clamp(17px,1.4vw,20px)] leading-relaxed text-white/70">
+      <p class="font-plex mt-6 max-w-[560px] text-pretty text-[clamp(17px,1.4vw,20px)] leading-relaxed text-white/70">
         Desarrolla habilidades paso a paso con cursos organizados por especialistas.
       </p>
 
@@ -144,7 +144,7 @@ const eyebrow = 'font-oswald text-xs font-medium uppercase tracking-[.12em] text
           ¿Por dónde empezar?
         </h2>
         <div>
-          <p class="max-w-[560px] text-pretty leading-relaxed text-white/70">
+          <p class="font-plex max-w-[560px] text-pretty leading-relaxed text-white/70">
             Las rutas están ordenadas de menor a mayor nivel. Si recién comienzas, parte por
             <NuxtLink :to="`/especialidad/${starter.slug}`" class="text-white underline underline-offset-4 hover:text-bta-pink">
               {{ starter.name }}

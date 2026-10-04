@@ -65,7 +65,7 @@ useSeo(() => ({
           <p v-if="p.headline" class="mt-3 text-lg text-white/70">
             {{ p.headline }}
           </p>
-          <p v-if="p.aboutme" class="mt-5 max-w-[640px] whitespace-pre-line text-pretty leading-relaxed text-white/75">
+          <p v-if="p.aboutme" class="font-plex mt-5 max-w-[640px] whitespace-pre-line text-pretty leading-relaxed text-white/75">
             {{ p.aboutme }}
           </p>
           <ul class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 font-inconsolata text-sm text-white/60">

@@ -31,7 +31,7 @@ const chip = 'inline-flex h-9 items-center rounded-full border px-4 text-sm tran
           <h1 class="mt-4 text-balance font-oswald text-[clamp(36px,5vw,70px)] font-semibold uppercase leading-[.98]">
             {{ title }}
           </h1>
-          <p class="mt-6 max-w-[600px] text-pretty text-lg leading-relaxed text-white/75">
+          <p class="font-plex mt-6 max-w-[600px] text-pretty text-lg leading-relaxed text-white/75">
             {{ intro }}
           </p>
         </div>
@@ -59,7 +59,7 @@ const chip = 'inline-flex h-9 items-center rounded-full border px-4 text-sm tran
             <span class="min-w-0">
               <span class="block font-inconsolata text-xs uppercase tracking-wide text-bta-pink">{{ d.category?.name }}</span>
               <span class="mt-1 block text-balance font-oswald text-[clamp(20px,2vw,26px)] font-medium leading-tight transition-colors group-hover:text-bta-pink">{{ d.title }}</span>
-              <span v-if="d.excerpt" class="mt-2 line-clamp-2 block text-[15px] leading-relaxed text-white/60">{{ d.excerpt }}</span>
+              <span v-if="d.excerpt" class="font-plex mt-2 line-clamp-2 block text-[15px] leading-relaxed text-white/60">{{ d.excerpt }}</span>
               <span class="mt-3 block text-[13px] text-white/45">
                 <template v-if="d.author">{{ d.author.name }} · </template><time :datetime="d.created_at">{{ formatDate(d.created_at) }}</time>
               </span>

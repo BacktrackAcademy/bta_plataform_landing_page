@@ -54,7 +54,7 @@ defineProps<{ article: PublicArticleCard }>()
         <span class="truncate text-[13px] text-white/80">{{ article.author.name }}</span>
       </div>
 
-      <p v-if="article.summary" class="line-clamp-2 text-[13px] leading-snug text-white/50">
+      <p v-if="article.summary" class="font-plex line-clamp-2 text-[13px] leading-snug text-white/50">
         {{ article.summary }}
       </p>
 

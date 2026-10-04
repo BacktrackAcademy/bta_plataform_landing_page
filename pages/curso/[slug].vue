@@ -75,7 +75,7 @@ const blocks = computed(() => [
           <h1 class="mt-4 text-balance font-oswald text-[clamp(34px,5vw,68px)] font-semibold uppercase leading-[1]">
             {{ c.title }}
           </h1>
-          <p v-if="c.summary" class="mt-6 max-w-[640px] text-pretty text-lg leading-relaxed text-white/75">
+          <p v-if="c.summary" class="font-plex mt-6 max-w-[640px] text-pretty text-lg leading-relaxed text-white/75">
             {{ c.summary }}
           </p>
           <p v-if="c.instructor" class="mt-6 text-white/70">
@@ -131,7 +131,7 @@ const blocks = computed(() => [
             <details v-for="(u, i) in c.syllabus" :key="u.title + i" class="group border-b border-gray-border" :open="i === 0">
               <summary class="flex cursor-pointer list-none items-center gap-4 py-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink">
                 <span class="font-inconsolata text-sm text-white/45">{{ String(i + 1).padStart(2, '0') }}</span>
-                <span class="min-w-0 flex-1 font-oswald text-xl font-medium leading-snug">{{ u.title }}</span>
+                <span class="font-plex min-w-0 flex-1 font-oswald text-xl font-medium leading-snug">{{ u.title }}</span>
                 <span class="font-inconsolata text-[13px] text-white/50">{{ u.lessons_count }} clases</span>
                 <span class="text-white/50 transition-transform group-open:rotate-45" aria-hidden="true">+</span>
               </summary>

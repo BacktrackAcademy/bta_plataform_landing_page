@@ -12,7 +12,7 @@ defineProps<{ specialty: PublicSpecialtyCard }>()
   >
     <span class="min-w-0">
       <span class="block font-oswald text-[clamp(22px,2.2vw,30px)] font-medium uppercase leading-tight tracking-[.01em] transition-colors duration-200 group-hover:text-bta-pink">{{ specialty.name }}</span>
-      <span v-if="specialty.summary" class="mt-1.5 line-clamp-2 block text-[15px] leading-relaxed text-white/60">{{ specialty.summary }}</span>
+      <span v-if="specialty.summary" class="mt-1.5 line-clamp-2 block font-plex text-[15px] leading-relaxed text-white/65">{{ specialty.summary }}</span>
     </span>
     <span class="text-right font-inconsolata text-sm text-white/55">
       {{ specialty.courses_count }} {{ specialty.courses_count === 1 ? 'curso' : 'cursos' }}<template v-if="formatDuration(specialty.total_duration_seconds)"> · {{ formatDuration(specialty.total_duration_seconds) }}</template>

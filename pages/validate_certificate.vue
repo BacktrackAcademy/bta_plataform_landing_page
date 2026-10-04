@@ -49,7 +49,7 @@ const linkedinSteps = [
         Valida tu certificado
       </h1>
       <hr class="my-6 w-16 border-bta-pink">
-      <p class="text-justify leading-relaxed">
+      <p class="font-plex text-justify leading-relaxed">
         Mediante esta herramienta de consulta puedes verificar la autenticidad de la certificación emitida por Backtrack Academy en los diferentes cursos o carreras que ofrece.
         Solo pueden ser consultados los certificados emitidos que contienen el código de validación alfanumérico ubicado en la parte inferior del documento.
       </p>

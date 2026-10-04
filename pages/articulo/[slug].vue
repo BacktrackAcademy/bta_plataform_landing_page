@@ -75,7 +75,7 @@ const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
         <h1 class="mt-4 text-balance font-oswald text-[clamp(32px,4.6vw,60px)] font-semibold leading-[1.04]">
           {{ a.title }}
         </h1>
-        <p v-if="a.summary" class="mt-5 text-pretty text-xl leading-relaxed text-white/75">
+        <p v-if="a.summary" class="font-plex mt-5 text-pretty text-xl leading-relaxed text-white/75">
           {{ a.summary }}
         </p>
         <div class="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm text-white/60">
@@ -146,7 +146,7 @@ const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
               <p v-if="a.author.headline" class="mt-0.5 text-sm text-white/60">
                 {{ a.author.headline }}
               </p>
-              <p v-if="a.author.aboutme" class="mt-3 text-pretty text-[15px] leading-relaxed text-white/70">
+              <p v-if="a.author.aboutme" class="font-plex mt-3 text-pretty text-[15px] leading-relaxed text-white/70">
                 {{ a.author.aboutme }}
               </p>
             </div>

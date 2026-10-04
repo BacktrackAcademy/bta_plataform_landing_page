@@ -30,7 +30,7 @@ const rest = computed(() => (featured.value ? props.articles.slice(1) : props.ar
         <h1 class="mt-4 text-balance font-oswald text-[clamp(38px,5.4vw,76px)] font-semibold uppercase leading-[.98]">
           {{ title }}
         </h1>
-        <p class="mt-6 max-w-[600px] text-pretty text-lg leading-relaxed text-white/75">
+        <p class="font-plex mt-6 max-w-[600px] text-pretty text-lg leading-relaxed text-white/75">
           {{ intro }}
         </p>
       </header>
@@ -66,7 +66,7 @@ const rest = computed(() => (featured.value ? props.articles.slice(1) : props.ar
             <h2 class="mt-3 text-balance font-oswald text-[clamp(28px,3.4vw,44px)] font-medium leading-[1.05] transition-colors group-hover:text-bta-pink">
               {{ featured.title }}
             </h2>
-            <p v-if="featured.summary" class="mt-4 line-clamp-3 text-pretty leading-relaxed text-white/70">
+            <p v-if="featured.summary" class="font-plex mt-4 line-clamp-3 text-pretty leading-relaxed text-white/70">
               {{ featured.summary }}
             </p>
             <p class="mt-5 text-[13px] text-white/50">

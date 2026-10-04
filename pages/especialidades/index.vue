@@ -29,7 +29,7 @@ useSeo(() => ({
         <h1 class="mt-4 text-balance font-oswald text-[clamp(38px,5.4vw,76px)] font-semibold uppercase leading-[.98]">
           Rutas completas para tu carrera en ciberseguridad
         </h1>
-        <p class="mt-6 max-w-[600px] text-pretty text-lg leading-relaxed text-white/75">
+        <p class="font-plex mt-6 max-w-[600px] text-pretty text-lg leading-relaxed text-white/75">
           Cada especialidad reúne, en orden, los cursos que necesitas para dominar un área: teoría, práctica, examen y certificado.
         </p>
       </header>

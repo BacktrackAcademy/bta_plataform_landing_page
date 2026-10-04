@@ -60,7 +60,7 @@ const h2 = 'font-oswald text-[clamp(26px,3vw,36px)] font-medium leading-tight'
           <p v-if="a.headline" class="mt-3 text-lg text-white/70">
             {{ a.headline }}
           </p>
-          <p v-if="a.aboutme" class="mt-5 max-w-[640px] text-pretty leading-relaxed text-white/75">
+          <p v-if="a.aboutme" class="font-plex mt-5 max-w-[640px] text-pretty leading-relaxed text-white/75">
             {{ a.aboutme }}
           </p>
           <ul class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 font-inconsolata text-sm text-white/60">

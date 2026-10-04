@@ -117,7 +117,7 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
           <h1 class="mt-5 text-balance font-oswald text-[clamp(44px,6.6vw,96px)] font-semibold uppercase leading-[.95] tracking-[-.01em]">
             Formación avanzada en <span class="text-bta-pink">ciberseguridad</span>
           </h1>
-          <p class="mt-8 max-w-[480px] text-pretty text-[clamp(17px,1.4vw,20px)] leading-relaxed text-white/75">
+          <p class="font-plex mt-8 max-w-[480px] text-pretty text-[clamp(17px,1.4vw,20px)] leading-relaxed text-white/75">
             Especialidades y cursos de hacking ético creados por profesionales de la industria. Aprende haciendo.
           </p>
           <div class="mt-10 flex flex-wrap gap-3">
@@ -163,7 +163,7 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
           <h2 :class="h2">
             Rutas completas para tu carrera
           </h2>
-          <p class="mt-5 max-w-[400px] text-pretty leading-relaxed text-white/75">
+          <p class="font-plex mt-5 max-w-[400px] text-pretty leading-relaxed text-white/75">
             Cada especialidad reúne los cursos necesarios, en orden, para dominar un área de la ciberseguridad.
           </p>
           <NuxtLink to="/especialidades" class="mt-8" :class="[sectionLink]">
@@ -208,7 +208,7 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
           <h2 class="text-balance font-oswald text-[clamp(32px,4vw,56px)] font-medium leading-[1.05]">
             La mejor manera de convertirse en un experto es aprendiendo de uno
           </h2>
-          <p class="mt-7 max-w-[720px] text-pretty text-[clamp(17px,1.5vw,20px)] leading-relaxed text-white/75">
+          <p class="font-plex mt-7 max-w-[720px] text-pretty text-[clamp(17px,1.5vw,20px)] leading-relaxed text-white/75">
             Brindamos la experiencia de los mejores profesionales a través de una ruta de aprendizaje que contiene cursos, exámenes y ejercicios prácticos, pensada para que cumplas tus objetivos en ciberseguridad.
           </p>
         </div>
@@ -217,10 +217,10 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
             <div class="font-inconsolata text-[13px] text-white/55">
               {{ w.n }}
             </div>
-            <h3 class="mt-3 text-xl font-semibold leading-snug">
+            <h3 class="font-plex mt-3 text-xl font-semibold leading-snug">
               {{ w.t }}
             </h3>
-            <p class="mt-2.5 text-pretty text-[15px] leading-relaxed text-white/75">
+            <p class="font-plex mt-2.5 text-pretty text-[15px] leading-relaxed text-white/75">
               {{ w.d }}
             </p>
           </div>
@@ -268,7 +268,7 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
             <div class="flex gap-1" role="img" :aria-label="`${r.evaluation} de 5 estrellas`">
               <Star v-for="i in 5" :key="i" :size="16" :class="i <= r.evaluation ? 'text-bta-pink' : 'text-white/25'" />
             </div>
-            <blockquote class="flex-1 text-pretty leading-relaxed text-white/75">
+            <blockquote class="font-plex flex-1 text-pretty leading-relaxed text-white/75">
               “{{ r.opinion }}”
             </blockquote>
             <figcaption class="flex flex-col gap-1 border-t border-white/5 pt-5">

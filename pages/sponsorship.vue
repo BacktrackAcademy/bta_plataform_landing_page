@@ -55,7 +55,7 @@ const offers = [
         <h2 class="font-oswald text-3xl text-white mb-4">
           Backtrackacademy y su respuesta al patrocinio.
         </h2>
-        <p class="text-justify leading-relaxed">
+        <p class="font-plex text-justify leading-relaxed">
           En Backtrack Academy creemos fuertemente en la labor de algunas instituciones sobre la concientización de seguridad informática en su región, la falta de conocimientos sobre estas amenazas conlleva muchos riesgos como el robo de identidad en el ciberespacio, defraudaciones en cuentas bancarias, infección de equipos, robo de información, etc. Es por eso que ponemos en disposición a nuestro personal para que pueda compartir de forma clara y concisa los temas relacionados al Ethical Hacking y Seguridad Ofensiva en su región de una forma remota y presencial, también aportamos con descuentos en nuestra plataforma y el sorteo de cuentas premium en nuestros cursos, ofrecemos publicidad en nuestras redes sociales.
         </p>
 
@@ -77,7 +77,7 @@ const offers = [
         <h2 class="font-oswald text-3xl text-white mb-4">
           Expositores
         </h2>
-        <p class="text-justify leading-relaxed">
+        <p class="font-plex text-justify leading-relaxed">
           Nuestros profesionales cuentan con conocimientos y habilidades en el mundo del Hacking Ético y Seguridad de la Información, han formado parte de equipos encargados de encontrar vulnerabilidades en sistemas industrias como entidades bancarias, empresas, gobiernos, etc. Contamos con experiencia en los temas actuales, control y mitigación de amenazas, etc.
         </p>
 

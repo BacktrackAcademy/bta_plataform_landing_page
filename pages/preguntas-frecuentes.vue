@@ -74,7 +74,7 @@ useHead({
             {{ faq.q }}
             <Icon name="lucide:chevron-down" class="size-5 shrink-0 transition-transform group-open:rotate-180" />
           </summary>
-          <p class="px-5 pb-5 font-inconsolata text-gray-300 leading-relaxed">
+          <p class="font-plex px-5 pb-5 text-gray-300 leading-relaxed">
             {{ faq.a }}
           </p>
         </details>

@@ -56,7 +56,7 @@ defineProps<{ course: PublicCourseCard, priority?: boolean }>()
         <span class="truncate text-[13px] text-white/80">{{ course.instructor.name }}</span>
       </div>
 
-      <p v-if="course.summary" class="line-clamp-2 text-[13px] leading-snug text-white/50">
+      <p v-if="course.summary" class="font-plex line-clamp-2 text-[13px] leading-snug text-white/50">
         {{ course.summary }}
       </p>
 

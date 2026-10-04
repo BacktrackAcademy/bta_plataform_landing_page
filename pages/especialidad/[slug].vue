@@ -77,7 +77,7 @@ const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
           <h1 class="mt-4 text-balance font-oswald text-[clamp(36px,5.4vw,76px)] font-semibold uppercase leading-[.98]">
             {{ s.name }}
           </h1>
-          <p v-if="s.summary" class="mt-6 max-w-[640px] text-pretty text-lg leading-relaxed text-white/75">
+          <p v-if="s.summary" class="font-plex mt-6 max-w-[640px] text-pretty text-lg leading-relaxed text-white/75">
             {{ s.summary }}
           </p>
           <ul class="mt-8 flex flex-wrap gap-x-8 gap-y-3 font-inconsolata text-sm text-white/70">
@@ -125,8 +125,8 @@ const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
               >
                 <span class="font-inconsolata text-sm text-white/45">{{ String(i + 1).padStart(2, '0') }}</span>
                 <span class="min-w-0">
-                  <span class="block font-oswald text-xl font-medium leading-snug transition-colors group-hover:text-bta-pink">{{ c.title }}</span>
-                  <span v-if="c.summary" class="mt-1 line-clamp-2 block text-[15px] leading-relaxed text-white/60">{{ c.summary }}</span>
+                  <span class="font-plex block font-oswald text-xl font-medium leading-snug transition-colors group-hover:text-bta-pink">{{ c.title }}</span>
+                  <span v-if="c.summary" class="font-plex mt-1 line-clamp-2 block text-[15px] leading-relaxed text-white/60">{{ c.summary }}</span>
                   <span v-if="c.coming_soon" class="mt-2 inline-block rounded bg-white/10 px-2 py-0.5 text-xs text-white/70">Próximamente</span>
                 </span>
                 <span class="col-start-2 mt-2 font-inconsolata text-[13px] text-white/50 sm:col-start-3 sm:mt-0 sm:text-right">

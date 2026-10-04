@@ -11,7 +11,7 @@ defineProps<{ title: string, html: string }>()
       </h1>
       <!-- eslint-disable-next-line vue/no-v-html -->
       <article
-        class="prose prose-invert max-w-none font-inconsolata prose-headings:font-oswald prose-headings:uppercase prose-a:text-bta-pink prose-p:text-gray-300 prose-li:text-gray-300 prose-li:marker:text-bta-pink"
+        class="font-plex prose prose-pre:font-inconsolata prose-code:font-inconsolata prose-invert max-w-none prose-headings:font-oswald prose-headings:uppercase prose-a:text-bta-pink prose-p:text-gray-300 prose-li:text-gray-300 prose-li:marker:text-bta-pink"
         v-html="html"
       />
     </div>

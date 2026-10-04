@@ -5,5 +5,5 @@ defineProps<{ html: string }>()
 
 <template>
   <!-- eslint-disable-next-line vue/no-v-html -->
-  <div class="prose prose-invert max-w-none text-white/80 prose-headings:font-oswald prose-headings:text-white prose-a:text-bta-pink prose-strong:text-white prose-li:marker:text-bta-pink" v-html="html" />
+  <div class="font-plex prose prose-pre:font-inconsolata prose-code:font-inconsolata prose-invert max-w-none text-white/80 prose-headings:font-oswald prose-headings:text-white prose-a:text-bta-pink prose-strong:text-white prose-li:marker:text-bta-pink" v-html="html" />
 </template>
