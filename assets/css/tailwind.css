@@ -126,3 +126,18 @@
   58% { transform: translateX(3px); clip-path: inset(30% 0 40% 0); }
   66% { transform: none; clip-path: inset(0); }
 }
+
+/* Portada de tarjetas: duotono violeta/magenta oscuro, como en la plataforma. */
+.gc-cover { filter: grayscale(0.7) brightness(0.65) contrast(1.15); }
+.gc-covertint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(236, 16, 117, 0.75), rgba(76, 40, 190, 0.85));
+  mix-blend-mode: color;
+  transition: opacity 0.3s;
+}
+.gc:hover .gc-covertint,
+.gc:focus-visible .gc-covertint { opacity: 0.6; }
+.gc:hover .gc-cover,
+.gc:focus-visible .gc-cover { filter: grayscale(0.4) brightness(0.8) contrast(1.15); }

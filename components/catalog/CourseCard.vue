@@ -20,8 +20,9 @@ defineProps<{ course: PublicCourseCard, priority?: boolean }>()
         height="320"
         :loading="priority ? 'eager' : 'lazy'"
         decoding="async"
-        class="h-full w-full object-cover opacity-80 transition duration-300 ease-out group-hover:scale-[1.03] group-hover:opacity-100"
+        class="gc-cover h-full w-full object-cover transition duration-300 ease-out group-hover:scale-[1.03]"
       >
+      <div class="gc-covertint" />
       <div class="absolute inset-0 bg-gradient-to-t from-[#12152b] via-[#12152b]/30 to-transparent" />
       <span
         v-if="course.is_free || course.coming_soon"
