@@ -48,8 +48,10 @@ const rest = computed(() => (featured.value ? props.articles.slice(1) : props.ar
           :to="`/articulo/${featured.slug}`"
           class="group mt-12 grid items-center gap-x-10 gap-y-6 border-b border-gray-border pb-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink lg:grid-cols-2"
         >
-          <div class="aspect-[16/9] overflow-hidden rounded-lg border border-white/5 bg-white/5">
-            <img v-if="featured.image_url || featured.image_thumb_url" :src="(featured.image_url || featured.image_thumb_url)!" :alt="featured.title" width="960" height="540" fetchpriority="high" decoding="async" class="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.02]">
+          <div class="gc relative aspect-[16/9] overflow-hidden rounded-lg border border-[#262a47] bg-[#0b0d1f]">
+            <img v-if="featured.image_url || featured.image_thumb_url" :src="(featured.image_url || featured.image_thumb_url)!" :alt="featured.title" width="960" height="540" fetchpriority="high" decoding="async" class="gc-cover h-full w-full object-cover transition duration-300 ease-out group-hover:scale-[1.02]">
+            <div class="gc-covertint" />
+            <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0b0d1f]/70 via-transparent to-transparent" />
           </div>
           <div>
             <p class="font-inconsolata text-xs uppercase tracking-wide text-bta-pink">

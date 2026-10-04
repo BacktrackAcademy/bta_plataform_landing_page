@@ -8,12 +8,14 @@ interface SitemapPayload {
   profiles: Entry[]
 }
 interface FiltersPayload {
+  specialties: { slug: string, courses_count: number }[]
+  categories: { slug: string, courses_count: number }[]
   article_categories: { slug: string }[]
   discussion_categories: { slug: string }[]
 }
 
 const MAX_URLS = 50000
-const STATIC_PAGES = ['/', '/cursos', '/especialidades', '/articulos', '/debates', '/team', '/security', '/sponsorship', '/preguntas-frecuentes', '/privacy_policy', '/terms_of_use']
+const STATIC_PAGES = ['/', '/cursos', '/especialidades', '/articulos', '/debates', '/team', '/security', '/preguntas-frecuentes', '/privacy_policy', '/terms_of_use']
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;')
 
@@ -48,6 +50,9 @@ export default defineEventHandler(async (event) => {
   add(data.discussions, s => `/debate/${encodeURIComponent(s)}`)
   add(data.authors, s => `/autor/${encodeURIComponent(s)}`)
   add(data.profiles, s => `/@${encodeURIComponent(s)}`)
+  // Cursos por tema / especialidad: solo con 2+ cursos (la página con menos se marca noindex).
+  ;(filters.specialties ?? []).filter(c => c.courses_count >= 2).forEach(c => urls.push({ loc: `/cursos/especialidad/${encodeURIComponent(c.slug)}` }))
+  ;(filters.categories ?? []).filter(c => c.courses_count >= 2).forEach(c => urls.push({ loc: `/cursos/tema/${encodeURIComponent(c.slug)}` }))
   ;(filters.article_categories ?? []).forEach(c => urls.push({ loc: `/articulos/categoria/${encodeURIComponent(c.slug)}` }))
   ;(filters.discussion_categories ?? []).forEach(c => urls.push({ loc: `/debates/categoria/${encodeURIComponent(c.slug)}` }))
 

@@ -11,7 +11,6 @@ const explore = [
 ]
 const academy = [
   { name: 'Nosotros', to: '/team' },
-  { name: 'Patrocinios', to: '/sponsorship' },
   { name: 'Seguridad', to: '/security' },
   { name: 'Preguntas frecuentes', to: '/preguntas-frecuentes' },
   { name: 'Valida tu certificado', to: '/validate_certificate' },
