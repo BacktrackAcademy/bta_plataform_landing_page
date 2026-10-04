@@ -155,21 +155,7 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
           </NuxtLink>
         </div>
         <div class="border-t border-gray-border lg:col-span-2">
-          <NuxtLink
-            v-for="s in specialtyList"
-            :key="s.slug"
-            :to="`/especialidad/${s.slug}`"
-            class="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-6 gap-y-2 border-b border-gray-border py-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink lg:grid-cols-[minmax(0,1fr)_auto_40px]"
-          >
-            <span class="min-w-0">
-              <span class="block font-oswald text-[clamp(22px,2.2vw,30px)] font-medium uppercase leading-tight tracking-[.01em] transition-colors duration-200 group-hover:text-bta-pink">{{ s.name }}</span>
-              <span v-if="s.summary" class="mt-1.5 line-clamp-2 block text-[15px] leading-relaxed text-white/60">{{ s.summary }}</span>
-            </span>
-            <span class="text-right font-inconsolata text-sm text-white/55">
-              {{ s.courses_count }} {{ s.courses_count === 1 ? 'curso' : 'cursos' }}<template v-if="formatDuration(s.total_duration_seconds)"> · {{ formatDuration(s.total_duration_seconds) }}</template>
-            </span>
-            <span class="hidden justify-end transition-all duration-200 group-hover:translate-x-1 group-hover:text-bta-pink lg:flex"><ArrowRight :size="20" /></span>
-          </NuxtLink>
+          <CatalogSpecialtyRow v-for="s in specialtyList" :key="s.slug" :specialty="s" />
         </div>
       </div>
     </section>

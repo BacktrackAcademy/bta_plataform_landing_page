@@ -66,3 +66,20 @@ export interface Paginated<T> {
   data: T[]
   pagination: { current_page: number, per_page: number, total_pages: number, total_entries: number }
 }
+
+export interface PublicSpecialty extends PublicSpecialtyCard {
+  // HTML saneado por la API. Mapeo editorial (igual que la vista legada de Rails):
+  // description = Acerca de · goals = Objetivos · learn = Habilidades · aptitude = Conocimientos previos
+  // work = Herramientas · why = Por qué esta especialidad
+  description: string | null
+  goals: string | null
+  learn: string | null
+  why: string | null
+  work: string | null
+  aptitude: string | null
+  tools: string | null
+  requirements: string | null
+  area: string | null
+  courses: PublicCourseCard[]
+  instructors: PublicAuthorRef[]
+}

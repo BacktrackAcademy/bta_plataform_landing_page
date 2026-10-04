@@ -41,3 +41,45 @@ export function breadcrumbSchema(abs: Abs, items: { name: string, path: string }
     })),
   }
 }
+
+/** Especialidad/curso como schema.org Course. `parts` = cursos que la componen. */
+export function courseSchema(abs: Abs, c: {
+  path: string
+  name: string
+  description?: string | null
+  level?: string | null
+  seconds?: number | null
+  image?: string | null
+  instructors?: { name: string, path: string }[]
+  parts?: { name: string, path: string }[]
+  isFree?: boolean
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    '@id': abs(c.path),
+    'url': abs(c.path),
+    'name': c.name,
+    ...(c.description ? { description: c.description } : {}),
+    'inLanguage': 'es',
+    ...(c.level ? { educationalLevel: c.level } : {}),
+    ...(c.image ? { image: c.image } : {}),
+    'provider': { '@type': 'EducationalOrganization', 'name': 'Backtrack Academy', 'url': abs('/') },
+    ...(c.instructors?.length
+      ? { author: c.instructors.map(i => ({ '@type': 'Person', 'name': i.name, 'url': abs(i.path) })) }
+      : {}),
+    ...(c.parts?.length
+      ? { hasPart: c.parts.map(p => ({ '@type': 'Course', 'name': p.name, 'url': abs(p.path), 'provider': { '@type': 'EducationalOrganization', 'name': 'Backtrack Academy' } })) }
+      : {}),
+    ...(c.seconds ? { timeRequired: isoDuration(c.seconds) } : {}),
+    ...(c.isFree ? { isAccessibleForFree: true } : {}),
+  }
+}
+
+export function itemListSchema(abs: Abs, items: { name: string, path: string }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'itemListElement': items.map((item, i) => ({ '@type': 'ListItem', 'position': i + 1, 'name': item.name, 'url': abs(item.path) })),
+  }
+}
