@@ -136,7 +136,8 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
     </section>
 
     <!-- ESPECIALIDADES -->
-    <section v-if="specialtyList.length" id="especialidades" class="border-t border-white/5">
+    <section v-if="specialtyList.length" id="especialidades" class="relative isolate border-t border-white/5">
+      <CyberBackground variant="recon" intensity="subtle" glow="left" />
       <div class="container grid items-start gap-x-20 gap-y-10 py-[clamp(80px,10vw,144px)] lg:grid-cols-3">
         <div class="lg:sticky lg:top-28">
           <div :class="eyebrow">
@@ -159,7 +160,8 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
     </section>
 
     <!-- CURSOS DESTACADOS -->
-    <section v-if="courses.length" id="cursos" class="border-t border-white/5">
+    <section v-if="courses.length" id="cursos" class="relative isolate border-t border-white/5">
+      <CyberBackground variant="scan" intensity="subtle" glow="right" />
       <div class="container py-[clamp(80px,10vw,144px)]">
         <div class="mb-10 flex flex-wrap items-end justify-between gap-6">
           <div>
@@ -181,7 +183,8 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
     </section>
 
     <!-- POR QUÉ -->
-    <section class="border-t border-white/5">
+    <section class="relative isolate border-t border-white/5">
+      <CyberBackground variant="exploit" intensity="faint" glow="none" />
       <div class="container py-[clamp(80px,10vw,144px)]">
         <div class="max-w-[960px]">
           <div class="mb-8 h-1 w-12 bg-bta-pink" />
@@ -209,7 +212,8 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
     </section>
 
     <!-- ARTÍCULOS -->
-    <section v-if="latestArticles.length" id="articulos" class="border-t border-white/5">
+    <section v-if="latestArticles.length" id="articulos" class="relative isolate border-t border-white/5">
+      <CyberBackground variant="http" intensity="subtle" glow="left" />
       <div class="container py-[clamp(80px,10vw,144px)]">
         <div class="mb-10 flex flex-wrap items-end justify-between gap-6">
           <div>
@@ -231,7 +235,8 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
     </section>
 
     <!-- OPINIONES -->
-    <section v-if="opinions?.length" id="opiniones" class="border-t border-white/5">
+    <section v-if="opinions?.length" id="opiniones" class="relative isolate border-t border-white/5">
+      <CyberBackground variant="topology" intensity="faint" glow="right" flip />
       <div class="container py-[clamp(80px,10vw,144px)]">
         <div class="mb-12">
           <div :class="eyebrow">
@@ -261,7 +266,8 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
     </section>
 
     <!-- PLANES -->
-    <section v-if="plans.length" id="planes" class="border-t border-white/5">
+    <section v-if="plans.length" id="planes" class="relative isolate border-t border-white/5">
+      <CyberBackground variant="grid" intensity="faint" glow="none" />
       <div class="container py-[clamp(80px,10vw,144px)]">
         <div class="mb-12 flex flex-wrap items-end justify-between gap-6">
           <div>
@@ -317,7 +323,8 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
     </section>
 
     <!-- CTA FINAL -->
-    <section class="border-t border-white/5">
+    <section class="relative isolate border-t border-white/5">
+      <CyberBackground variant="prompt" intensity="normal" glow="center" mask="soft" />
       <div class="container flex flex-wrap items-end justify-between gap-10 py-[clamp(96px,12vw,176px)]">
         <h2 class="max-w-[820px] text-balance font-oswald text-[clamp(40px,5.6vw,84px)] font-semibold uppercase leading-[.98]">
           Empieza hoy tu camino en <span class="text-bta-pink">ciberseguridad</span>
