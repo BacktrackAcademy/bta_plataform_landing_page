@@ -116,3 +116,33 @@ export function articleSchema(abs: Abs, a: {
     'publisher': { '@type': 'EducationalOrganization', 'name': 'Backtrack Academy', 'url': abs('/'), 'logo': { '@type': 'ImageObject', 'url': abs('/favicon.svg') } },
   }
 }
+
+export function qaPageSchema(abs: Abs, q: {
+  path: string
+  name: string
+  text: string
+  created?: string | null
+  author?: string | null
+  answers: { text: string, created?: string | null, author?: string | null }[]
+}) {
+  const person = (name?: string | null) => (name ? { '@type': 'Person', name } : undefined)
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'QAPage',
+    'url': abs(q.path),
+    'mainEntity': {
+      '@type': 'Question',
+      'name': q.name,
+      'text': q.text || q.name,
+      'answerCount': q.answers.length,
+      ...(q.created ? { dateCreated: q.created } : {}),
+      ...(q.author ? { author: person(q.author) } : {}),
+      'suggestedAnswer': q.answers.map(a => ({
+        '@type': 'Answer',
+        'text': a.text,
+        ...(a.created ? { dateCreated: a.created } : {}),
+        ...(a.author ? { author: person(a.author) } : {}),
+      })),
+    },
+  }
+}

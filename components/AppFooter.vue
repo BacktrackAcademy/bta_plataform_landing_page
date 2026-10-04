@@ -6,6 +6,7 @@ const explore = [
   { name: 'Cursos', to: '/cursos' },
   { name: 'Especialidades', to: '/especialidades' },
   { name: 'Artículos', to: '/articulos' },
+  { name: 'Debates', to: '/debates' },
   { name: 'Precios', to: '/precios' },
 ]
 const academy = [

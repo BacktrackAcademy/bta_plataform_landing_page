@@ -107,6 +107,7 @@ export interface PublicFilters {
   categories: { slug: string, name: string, courses_count: number }[]
   instructors: { username: string, name: string, courses_count: number }[]
   article_categories: { slug: string, name: string, articles_count: number }[]
+  discussion_categories: { slug: string, name: string, discussions_count: number }[]
 }
 
 export interface PublicArticle extends PublicArticleCard {
@@ -122,4 +123,28 @@ export interface PublicArticle extends PublicArticleCard {
 export interface PublicAuthorCardLite extends PublicAuthorRef {
   headline: string | null
   aboutme: string | null
+}
+
+export interface PublicPerson {
+  name: string
+  avatar_url: string | null
+}
+
+export interface PublicDiscussionCard {
+  slug: string
+  title: string
+  excerpt: string | null
+  category: PublicRef | null
+  author: PublicPerson | null
+  answers_count: number
+  resolved: boolean
+  created_at: string
+  last_comment_at: string | null
+}
+
+export interface PublicDiscussion extends PublicDiscussionCard {
+  body_html: string | null
+  course: { slug: string, title: string } | null
+  updated_at: string
+  answers: { author: PublicPerson | null, body_html: string | null, created_at: string }[]
 }

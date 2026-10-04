@@ -9,6 +9,7 @@ export const APP_REDIRECT_PREFIXES = [
   '/cursos',
   '/curso',
   '/suscripciones',
+  '/debates',
   '/dashboard',
 ] as const
 

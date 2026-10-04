@@ -29,3 +29,8 @@ export function prepareArticleHtml(html: string): { html: string, toc: TocItem[]
   })
   return { html: withIds.replace(/<img(?![^>]*\sloading=)/gi, '<img loading="lazy" decoding="async"'), toc }
 }
+
+/** HTML (ya saneado) → texto plano, para JSON-LD y resúmenes. */
+export function htmlToText(html: string | null | undefined, max = 5000): string {
+  return decode((html ?? '').replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim().slice(0, max)
+}

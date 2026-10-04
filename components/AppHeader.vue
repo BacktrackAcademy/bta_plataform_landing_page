@@ -10,6 +10,7 @@ const links = [
   { name: 'Cursos', to: '/cursos', match: ['/cursos', '/curso'] },
   { name: 'Especialidades', to: '/especialidades', match: ['/especialidades', '/especialidad'] },
   { name: 'Artículos', to: '/articulos', match: ['/articulos', '/articulo', '/autor'] },
+  { name: 'Debates', to: '/debates', match: ['/debates', '/debate'] },
   { name: 'Precios', to: '/precios', match: ['/precios'] },
 ]
 
@@ -28,7 +29,7 @@ watch(() => route.fullPath, () => (menuOpen.value = false))
           <img class="w-32" src="~/assets/logo.svg" alt="Backtrack Academy" width="128" height="32">
         </NuxtLink>
 
-        <div class="ml-auto hidden items-center gap-8 font-oswald text-sm uppercase lg:flex">
+        <div class="ml-auto hidden items-center gap-6 font-oswald text-sm uppercase lg:flex xl:gap-8">
           <NuxtLink
             v-for="link in links"
             :key="link.to"
