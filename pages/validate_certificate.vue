@@ -1,7 +1,9 @@
 <script setup lang="ts">
-useSeoMeta({
+useSeo({
   title: 'Valida tu certificado',
   description: 'Verifica la autenticidad de los certificados emitidos por Backtrack Academy con su código de validación.',
+  path: '/validate_certificate',
+  noindex: true,
 })
 
 const config = useRuntimeConfig()

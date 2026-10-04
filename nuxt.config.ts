@@ -26,6 +26,8 @@ export default defineNuxtConfig({
       platformUrl: 'http://localhost:4321',
       // Origen canónico del sitio público (canonical, og:url, JSON-LD, sitemap). Override: NUXT_PUBLIC_SITE_URL
       siteUrl: 'https://backtrackacademy.com',
+      // Fuerza indexación fuera del dominio de producción (por defecto solo backtrackacademy.com se indexa). NUXT_PUBLIC_ALLOW_INDEXING
+      allowIndexing: false,
     },
   },
 

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-useSeoMeta({
+useSeo({
   title: 'Security Hall of Fame',
   description: 'Reportes de seguridad enviados por la comunidad. Muchas gracias por hacer de Backtrack Academy un mejor lugar.',
+  path: '/security',
 })
 
 const hall = [

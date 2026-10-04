@@ -30,9 +30,10 @@ const faqs = [
   },
 ]
 
-useSeoMeta({
+useSeo({
   title: 'Preguntas frecuentes',
   description: 'Resuelve tus dudas sobre registro, oportunidades, cursos Premium y métodos de pago en Backtrack Academy.',
+  path: '/preguntas-frecuentes',
 })
 
 useHead({

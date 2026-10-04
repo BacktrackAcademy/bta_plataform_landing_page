@@ -1,7 +1,8 @@
 <script setup lang="ts">
-useSeoMeta({
+useSeo({
   title: 'Conoce nuestro equipo',
   description: 'El equipo que hace posible que las cosas pasen en Backtrack Academy.',
+  path: '/team',
 })
 
 interface Member {

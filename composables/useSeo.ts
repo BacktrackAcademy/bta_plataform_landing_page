@@ -5,7 +5,7 @@ export interface SeoOptions {
   description: string
   /** Path canónico ("/curso/xyz"). Por defecto, la ruta actual sin query. */
   path?: string
-  /** Imagen OG: absoluta o path del sitio. Por defecto /og-image.png. */
+  /** Imagen OG: absoluta o path del sitio. Por defecto /og-default.jpg (1200×630). */
   image?: string | null
   type?: 'website' | 'article' | 'profile'
   /** noindex, follow (filtros, páginas sin valor SEO, estados de error). */
@@ -27,17 +27,19 @@ export function jsonLdString(data: object | object[]) {
 export function useSeo(options: MaybeRefOrGetter<SeoOptions>) {
   const abs = useSiteUrl()
   const route = useRoute()
+  const { siteUrl, allowIndexing } = useRuntimeConfig().public
+  const canIndex = indexingAllowed(String(siteUrl), allowIndexing)
   const o = () => toValue(options)
   const canonical = computed(() => abs(o().path ?? route.path))
   const image = computed(() => {
-    const img = o().image || '/og-image.png'
+    const img = o().image || '/og-default.jpg'
     return /^https?:\/\//.test(img) ? img : abs(img)
   })
 
   useSeoMeta({
     title: () => o().title,
     description: () => o().description,
-    robots: () => (o().noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'),
+    robots: () => (o().noindex || !canIndex ? 'noindex, follow' : 'index, follow, max-image-preview:large'),
     ogTitle: () => o().title,
     ogDescription: () => o().description,
     ogType: () => o().type ?? 'website',

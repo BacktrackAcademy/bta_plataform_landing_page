@@ -1,7 +1,8 @@
 <script setup lang="ts">
-useSeoMeta({
+useSeo({
   title: 'Patrocinio',
   description: 'Ponemos a disposición a nuestro personal para compartir temas de Ethical Hacking y Seguridad Informática en tu región, de forma remota y presencial.',
+  path: '/sponsorship',
 })
 
 const mailto = 'mailto:contacto@backtrackacademy.com?Subject=Consultar%20Patrocinio'
