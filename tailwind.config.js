@@ -18,7 +18,7 @@ module.exports = {
     },
     extend: {
       backgroundImage: {
-        'bta-hero': 'url(\'/banner/banner_pink.png\')',
+        'bta-hero': 'url(\'/banner/banner_pink_1920.webp\')',
       },
       fontFamily: {
         oswald: ['Oswald', 'helvetica neue', 'Helvetica', 'Arial', 'sans-serif'],
