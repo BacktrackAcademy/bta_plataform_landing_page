@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Paginated, PublicArticleCard, PublicAuthorCard, PublicCourseCard, PublicSpecialtyCard } from '~/interfaces/public'
+import type { Paginated, PublicArticleCard, PublicCourseCard, PublicSpecialtyCard } from '~/interfaces/public'
 import { ArrowRight, Check, Minus, Star } from 'lucide-vue-next'
 
 interface Opinion {
@@ -34,14 +34,12 @@ const { signupUrl } = useAppLinks()
 // una caída parcial de la API no rompe la home.
 const { data: specialties } = usePublicApi<{ data: PublicSpecialtyCard[] }>('/specialties')
 const { data: featured } = usePublicApi<Paginated<PublicCourseCard>>('/courses', { query: { sort: 'popular', per_page: 6 } })
-const { data: authors } = usePublicApi<{ data: PublicAuthorCard[] }>('/authors')
 const { data: articles } = usePublicApi<Paginated<PublicArticleCard>>('/articles', { query: { per_page: 3 } })
 const { data: opinions } = useAPI<Opinion[]>('/landing/opinions', { params: { limit: 3 } })
 const { data: apiPlans } = useAPI<Plan[]>('/landing/plans')
 
 const specialtyList = computed(() => (specialties.value?.data ?? []).filter(s => s.courses_count > 0))
 const courses = computed(() => featured.value?.data ?? [])
-const instructors = computed(() => (authors.value?.data ?? []).filter(a => a.courses_count > 0).slice(0, 4))
 const latestArticles = computed(() => articles.value?.data ?? [])
 const totalCourses = computed(() => featured.value?.pagination.total_entries ?? 0)
 const totalHours = computed(() => Math.round(specialtyList.value.reduce((a, s) => a + s.total_duration_seconds, 0) / 3600))
@@ -207,41 +205,6 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
             </p>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- INSTRUCTORES -->
-    <section v-if="instructors.length" id="instructores" class="border-t border-white/5">
-      <div class="container py-[clamp(80px,10vw,144px)]">
-        <div class="mb-12 max-w-[620px]">
-          <div :class="eyebrow">
-            Instructores
-          </div>
-          <h2 :class="h2">
-            Aprende de quienes lo hacen a diario
-          </h2>
-        </div>
-        <ul class="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-          <li v-for="a in instructors" :key="a.username">
-            <NuxtLink :to="`/autor/${a.username}`" class="group flex flex-col gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink">
-              <div class="aspect-square w-full max-w-[200px] overflow-hidden rounded-full border border-gray-border bg-bta-section">
-                <img v-if="a.avatar_url" :src="a.avatar_url" :alt="a.name" width="200" height="200" loading="lazy" decoding="async" class="h-full w-full object-cover">
-                <span v-else class="grid h-full w-full place-items-center font-oswald text-5xl text-white/50">{{ initials(a.name) }}</span>
-              </div>
-              <div>
-                <h3 class="font-oswald text-2xl font-medium transition-colors group-hover:text-bta-pink">
-                  {{ a.name }}
-                </h3>
-                <p v-if="a.headline" class="mt-1 text-sm text-white/60">
-                  {{ a.headline }}
-                </p>
-                <p class="mt-2 font-inconsolata text-xs text-white/45">
-                  {{ a.courses_count }} {{ a.courses_count === 1 ? 'curso' : 'cursos' }}
-                </p>
-              </div>
-            </NuxtLink>
-          </li>
-        </ul>
       </div>
     </section>
 
