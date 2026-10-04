@@ -106,4 +106,20 @@ export interface PublicFilters {
   specialties: { slug: string, name: string, courses_count: number }[]
   categories: { slug: string, name: string, courses_count: number }[]
   instructors: { username: string, name: string, courses_count: number }[]
+  article_categories: { slug: string, name: string, articles_count: number }[]
+}
+
+export interface PublicArticle extends PublicArticleCard {
+  body_html: string | null
+  keywords: string | null
+  reading_time_minutes: number | null
+  author: PublicAuthorCardLite | null
+  related_articles: PublicArticleCard[]
+  related_course: PublicCourseCard | null
+  related_specialty: PublicSpecialtyCard | null
+}
+
+export interface PublicAuthorCardLite extends PublicAuthorRef {
+  headline: string | null
+  aboutme: string | null
 }

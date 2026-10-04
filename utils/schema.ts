@@ -89,3 +89,30 @@ export function itemListSchema(abs: Abs, items: { name: string, path: string }[]
     'itemListElement': items.map((item, i) => ({ '@type': 'ListItem', 'position': i + 1, 'name': item.name, 'url': abs(item.path) })),
   }
 }
+
+export function articleSchema(abs: Abs, a: {
+  path: string
+  headline: string
+  description?: string | null
+  image?: string | null
+  published?: string | null
+  modified?: string | null
+  author?: { name: string, path: string } | null
+  section?: string | null
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    '@id': abs(a.path),
+    'mainEntityOfPage': { '@type': 'WebPage', '@id': abs(a.path) },
+    'headline': a.headline,
+    ...(a.description ? { description: a.description } : {}),
+    ...(a.image ? { image: [a.image] } : {}),
+    ...(a.published ? { datePublished: a.published } : {}),
+    ...((a.modified || a.published) ? { dateModified: a.modified || a.published } : {}),
+    ...(a.author ? { author: { '@type': 'Person', 'name': a.author.name, 'url': abs(a.author.path) } } : {}),
+    ...(a.section ? { articleSection: a.section } : {}),
+    'inLanguage': 'es',
+    'publisher': { '@type': 'EducationalOrganization', 'name': 'Backtrack Academy', 'url': abs('/'), 'logo': { '@type': 'ImageObject', 'url': abs('/favicon.svg') } },
+  }
+}
