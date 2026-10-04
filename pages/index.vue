@@ -33,14 +33,31 @@ const { signupUrl } = useAppLinks()
 // Todo el contenido sale de la API pública de Rails. Cada sección se oculta si su dato no llegó:
 // una caída parcial de la API no rompe la home.
 const { data: specialties } = usePublicApi<{ data: PublicSpecialtyCard[] }>('/specialties')
-const { data: featured } = usePublicApi<Paginated<PublicCourseCard>>('/courses', { query: { sort: 'popular', per_page: 6 } })
-const { data: articles } = usePublicApi<Paginated<PublicArticleCard>>('/articles', { query: { per_page: 3 } })
+const { data: featured } = usePublicApi<Paginated<PublicCourseCard>>('/courses', { query: { per_page: 30 } })
+const { data: articles } = usePublicApi<Paginated<PublicArticleCard>>('/articles', { query: { per_page: 30 } })
 const { data: opinions } = useAPI<Opinion[]>('/landing/opinions', { params: { limit: 3 } })
 const { data: apiPlans } = useAPI<Plan[]>('/landing/plans')
 
 const specialtyList = computed(() => (specialties.value?.data ?? []).filter(s => s.courses_count > 0))
-const courses = computed(() => featured.value?.data ?? [])
-const latestArticles = computed(() => articles.value?.data ?? [])
+// Más recientes primero (la API ya ordena así), un curso por instructor; si no alcanzan, se completa con los siguientes más nuevos.
+function pickDistinct<T>(items: T[], key: (i: T) => string | undefined, n: number): T[] {
+  const seen = new Set<string>()
+  const first: T[] = []
+  const rest: T[] = []
+  for (const it of items) {
+    const k = key(it)
+    if (k && !seen.has(k)) {
+      seen.add(k)
+      first.push(it)
+    }
+    else {
+      rest.push(it)
+    }
+  }
+  return [...first, ...rest].slice(0, n)
+}
+const courses = computed(() => pickDistinct(featured.value?.data ?? [], c => c.instructor?.username, 6))
+const latestArticles = computed(() => pickDistinct(articles.value?.data ?? [], a => a.author?.username, 3))
 const totalCourses = computed(() => featured.value?.pagination.total_entries ?? 0)
 const totalHours = computed(() => Math.round(specialtyList.value.reduce((a, s) => a + s.total_duration_seconds, 0) / 3600))
 
@@ -75,7 +92,7 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
 </script>
 
 <template>
-  <div class="bg-bta-dark-blue font-plex text-white">
+  <div class="bg-bta-dark-blue font-inconsolata text-white">
     <!-- HERO -->
     <section class="relative flex min-h-[min(820px,92vh)] items-end overflow-hidden md:items-center">
       <picture>

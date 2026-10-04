@@ -40,7 +40,8 @@ const h2 = 'font-oswald text-[clamp(26px,3vw,36px)] font-medium leading-tight'
 </script>
 
 <template>
-  <div class="bg-bta-dark-blue font-plex text-white">
+  <div class="relative isolate bg-bta-dark-blue font-inconsolata text-white">
+    <CyberBackground variant="topology" intensity="faint" glow="right" />
     <div class="container pb-[clamp(72px,9vw,128px)] pt-10">
       <CatalogBreadcrumbs :items="[{ name: 'Inicio', to: '/' }, { name: a.name }]" />
 

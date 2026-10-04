@@ -42,7 +42,8 @@ function avatar(url: string) {
 </script>
 
 <template>
-  <div class="bg-bta-dark-blue">
+  <div class="relative isolate bg-bta-dark-blue">
+    <CyberBackground variant="topology" intensity="faint" glow="right" />
     <section class="bg-bta-hero bg-cover bg-no-repeat bg-right py-24 lg:py-40">
       <div class="container">
         <div class="max-w-2xl">

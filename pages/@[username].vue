@@ -47,7 +47,8 @@ useSeo(() => ({
 </script>
 
 <template>
-  <div class="bg-bta-dark-blue font-plex text-white">
+  <div class="relative isolate bg-bta-dark-blue font-inconsolata text-white">
+    <CyberBackground variant="topology" intensity="faint" glow="right" />
     <div class="container pb-[clamp(72px,9vw,128px)] pt-16">
       <header class="flex flex-col gap-6 sm:flex-row sm:items-start">
         <span class="grid size-24 shrink-0 place-items-center overflow-hidden rounded-full border border-gray-border bg-bta-section font-oswald text-3xl text-white/50">

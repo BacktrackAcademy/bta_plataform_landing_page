@@ -53,7 +53,8 @@ useHead({
 </script>
 
 <template>
-  <div class="bg-bta-dark-blue py-24">
+  <div class="relative isolate bg-bta-dark-blue py-24">
+    <CyberBackground variant="http" intensity="faint" glow="right" />
     <div class="w-full max-w-4xl mx-auto px-4">
       <h1 class="text-white text-3xl md:text-4xl font-oswald pt-16 leading-normal">
         Preguntas frecuentes

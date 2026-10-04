@@ -19,7 +19,8 @@ const chip = 'inline-flex h-9 items-center rounded-full border px-4 text-sm tran
 </script>
 
 <template>
-  <div class="bg-bta-dark-blue font-plex text-white">
+  <div class="relative isolate bg-bta-dark-blue font-inconsolata text-white">
+    <CyberBackground variant="exploit" intensity="faint" glow="right" />
     <div class="container pb-[clamp(72px,9vw,128px)] pt-10">
       <CatalogBreadcrumbs :items="crumbs" />
       <header class="mt-10 flex max-w-[1000px] flex-wrap items-end justify-between gap-x-10 gap-y-6">

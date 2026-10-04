@@ -66,7 +66,7 @@ const style = computed(() => {
     <p v-if="fragment.title" class="cy-title">
       {{ fragment.title }}
     </p>
-    <pre class="cy-pre"><template v-for="(r, i) in rows" :key="i"><span class="cy-line" :data-kind="r.kind" :style="{ '--d': `${r.d}s` }"><span v-if="r.prefix" class="cy-prompt">{{ r.prefix }}</span><span v-if="r.typed" class="cy-type" :style="{ '--n': r.n, '--t': `${r.t}s` }">{{ r.text }}</span><template v-else>{{ r.text }}</template><span v-if="fragment.cursor && i === rows.length - 1" class="cy-cursor">█</span></span>
+    <pre class="cy-pre"><template v-for="(r, i) in rows" :key="i"><span class="cy-line" :data-kind="r.kind" :style="{ '--d': `${r.d}s` }"><span v-if="r.prefix" class="cy-prompt">{{ r.prefix }}</span><span v-if="r.typed" class="cy-type" :style="{ '--n': r.n, '--t': `${r.t}s` }">{{ r.text }}</span><template v-else>{{ r.text }}</template><span v-if="fragment.cursor !== false && i === rows.length - 1" class="cy-cursor">█</span></span>
 </template></pre>
   </div>
 </template>

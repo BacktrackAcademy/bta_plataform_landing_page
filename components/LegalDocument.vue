@@ -3,7 +3,8 @@ defineProps<{ title: string, html: string }>()
 </script>
 
 <template>
-  <div class="bg-bta-dark-blue py-24">
+  <div class="relative isolate bg-bta-dark-blue py-24">
+    <CyberBackground variant="grid" intensity="faint" glow="right" />
     <div class="w-full xl:w-8/12 mx-auto px-4">
       <h1 class="text-white text-center text-3xl font-oswald pt-16 pb-10 leading-normal">
         {{ title }}

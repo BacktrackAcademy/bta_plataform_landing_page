@@ -58,7 +58,8 @@ const blocks = computed(() => [
 </script>
 
 <template>
-  <div class="bg-bta-dark-blue pb-24 font-plex text-white lg:pb-0">
+  <div class="relative isolate bg-bta-dark-blue pb-24 font-inconsolata text-white lg:pb-0">
+    <CyberBackground variant="scan" intensity="faint" glow="right" />
     <!-- HERO -->
     <section class="relative overflow-hidden border-b border-white/5">
       <img v-if="cover" :src="cover" alt="" width="1200" height="600" fetchpriority="high" decoding="async" class="absolute inset-0 h-full w-full object-cover opacity-20">

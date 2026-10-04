@@ -55,7 +55,8 @@ const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
 </script>
 
 <template>
-  <div class="bg-bta-dark-blue font-plex text-white">
+  <div class="relative isolate bg-bta-dark-blue font-inconsolata text-white">
+    <CyberBackground variant="http" intensity="faint" glow="right" />
     <article class="container pb-[clamp(56px,7vw,96px)] pt-10">
       <CatalogBreadcrumbs
         :items="[

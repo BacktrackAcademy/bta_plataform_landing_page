@@ -29,7 +29,8 @@ const offers = [
 </script>
 
 <template>
-  <div class="bg-bta-dark-blue">
+  <div class="relative isolate bg-bta-dark-blue">
+    <CyberBackground variant="scan" intensity="faint" glow="right" />
     <section
       class="bg-cover bg-center bg-no-repeat py-24 lg:py-40"
       style="background-image: linear-gradient(rgba(7, 9, 22, 0.65), rgba(7, 9, 22, 0.65)), url('/img/sponsorship/Patrocinio.jpg')"

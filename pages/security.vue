@@ -18,7 +18,8 @@ const hall = [
 </script>
 
 <template>
-  <div class="bg-bta-dark-blue py-24">
+  <div class="relative isolate bg-bta-dark-blue py-24">
+    <CyberBackground variant="exploit" intensity="faint" glow="right" />
     <div class="w-full max-w-5xl mx-auto px-4">
       <h1 class="text-white text-3xl md:text-4xl font-oswald pt-16 leading-normal">
         Security Hall of Fame Backtrack Academy

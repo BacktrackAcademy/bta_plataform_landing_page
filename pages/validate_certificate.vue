@@ -42,7 +42,8 @@ const linkedinSteps = [
 </script>
 
 <template>
-  <div class="bg-bta-dark-blue py-24">
+  <div class="relative isolate bg-bta-dark-blue py-24">
+    <CyberBackground variant="prompt" intensity="faint" glow="right" />
     <div class="w-full max-w-4xl mx-auto px-4 font-inconsolata text-gray-300">
       <h1 class="text-white text-3xl md:text-4xl font-oswald pt-16 leading-normal">
         Valida tu certificado

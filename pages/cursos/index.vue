@@ -81,7 +81,8 @@ const field = 'h-11 w-full rounded-md border border-gray-border bg-bta-section p
 </script>
 
 <template>
-  <div class="bg-bta-dark-blue font-plex text-white">
+  <div class="relative isolate bg-bta-dark-blue font-inconsolata text-white">
+    <CyberBackground variant="scan" intensity="faint" glow="right" />
     <div class="container pb-[clamp(72px,9vw,128px)] pt-10">
       <CatalogBreadcrumbs :items="[{ name: 'Inicio', to: '/' }, { name: 'Cursos' }]" />
       <header class="mt-10 max-w-[760px]">

@@ -51,7 +51,8 @@ const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
 </script>
 
 <template>
-  <div class="bg-bta-dark-blue pb-24 font-plex text-white lg:pb-0">
+  <div class="relative isolate bg-bta-dark-blue pb-24 font-inconsolata text-white lg:pb-0">
+    <CyberBackground variant="recon" intensity="faint" glow="right" />
     <!-- HERO -->
     <section class="relative overflow-hidden border-b border-white/5">
       <img
