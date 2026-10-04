@@ -83,3 +83,27 @@ export interface PublicSpecialty extends PublicSpecialtyCard {
   courses: PublicCourseCard[]
   instructors: PublicAuthorRef[]
 }
+
+export interface PublicSyllabusUnit {
+  title: string
+  lessons_count: number
+  lessons: { title: string, duration: string | null, is_free: boolean }[]
+}
+
+export interface PublicCourse extends PublicCourseCard {
+  description: string | null
+  goals: string | null
+  benefits: string | null
+  keywords: string | null
+  wallpaper_url: string | null
+  rating: { average: number | null, count: number }
+  syllabus: PublicSyllabusUnit[]
+  created_at: string
+}
+
+export interface PublicFilters {
+  levels: { slug: string, name: string, courses_count: number }[]
+  specialties: { slug: string, name: string, courses_count: number }[]
+  categories: { slug: string, name: string, courses_count: number }[]
+  instructors: { username: string, name: string, courses_count: number }[]
+}

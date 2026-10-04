@@ -48,7 +48,6 @@ useSeo(() => ({
 }))
 
 const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[#D60E6A] px-6 font-medium text-white transition-colors duration-200 hover:bg-[#B80C5B] active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink focus-visible:ring-offset-2 focus-visible:ring-offset-bta-dark-blue'
-const prose = 'prose prose-invert max-w-none text-white/80 prose-headings:font-oswald prose-headings:text-white prose-a:text-bta-pink prose-strong:text-white prose-li:marker:text-bta-pink'
 </script>
 
 <template>
@@ -110,8 +109,7 @@ const prose = 'prose prose-invert max-w-none text-white/80 prose-headings:font-o
           <h2 class="font-oswald text-[clamp(26px,3vw,36px)] font-medium leading-tight">
             {{ b.title }}
           </h2>
-          <!-- eslint-disable-next-line vue/no-v-html -->
-          <div class="mt-5" :class="prose" v-html="b.html" />
+          <CatalogRichText :html="b.html!" class="mt-5" />
         </section>
 
         <section v-if="s.courses.length" id="temario">
@@ -200,9 +198,6 @@ const prose = 'prose prose-invert max-w-none text-white/80 prose-headings:font-o
       </div>
     </section>
 
-    <!-- CTA fijo (móvil) -->
-    <div class="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-bta-dark-blue/95 p-3 backdrop-blur lg:hidden">
-      <a :href="startUrl" class="w-full" :class="[btnPrimary]">Comenzar especialidad</a>
-    </div>
+    <CatalogStickyCta :href="startUrl" label="Comenzar especialidad" />
   </div>
 </template>

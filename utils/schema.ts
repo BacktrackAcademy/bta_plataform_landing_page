@@ -53,6 +53,8 @@ export function courseSchema(abs: Abs, c: {
   instructors?: { name: string, path: string }[]
   parts?: { name: string, path: string }[]
   isFree?: boolean
+  rating?: { average: number | null, count: number } | null
+  partOf?: { name: string, path: string } | null
 }) {
   return {
     '@context': 'https://schema.org',
@@ -73,6 +75,10 @@ export function courseSchema(abs: Abs, c: {
       : {}),
     ...(c.seconds ? { timeRequired: isoDuration(c.seconds) } : {}),
     ...(c.isFree ? { isAccessibleForFree: true } : {}),
+    ...(c.rating?.count && c.rating.average
+      ? { aggregateRating: { '@type': 'AggregateRating', 'ratingValue': c.rating.average, 'ratingCount': c.rating.count, 'bestRating': 5, 'worstRating': 1 } }
+      : {}),
+    ...(c.partOf ? { isPartOf: { '@type': 'Course', 'name': c.partOf.name, 'url': abs(c.partOf.path) } } : {}),
   }
 }
 
