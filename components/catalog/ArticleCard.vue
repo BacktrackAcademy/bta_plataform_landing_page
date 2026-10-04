@@ -8,7 +8,7 @@ defineProps<{ article: PublicArticleCard }>()
 <template>
   <NuxtLink
     :to="`/articulo/${article.slug}`"
-    class="group flex flex-col overflow-hidden rounded-lg border border-[#262a47] bg-[#12152b] font-inconsolata text-white shadow-[0_0_0_1px_rgba(0,0,0,.2)] transition-all duration-200 hover:-translate-y-0.5 hover:border-bta-pink/50 hover:shadow-[0_8px_30px_-12px_rgba(236,16,117,.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink"
+    class="gc group flex flex-col overflow-hidden rounded-lg border border-[#262a47] bg-[#12152b] font-inconsolata text-white shadow-[0_0_0_1px_rgba(0,0,0,.2)] transition-all duration-200 hover:-translate-y-0.5 hover:border-bta-pink/50 hover:shadow-[0_8px_30px_-12px_rgba(236,16,117,.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink"
   >
     <div class="relative aspect-[16/8] overflow-hidden border-b border-[#262a47] bg-[#0b0d1f]">
       <img
@@ -36,17 +36,19 @@ defineProps<{ article: PublicArticleCard }>()
       </h3>
 
       <div v-if="article.author" class="flex items-center gap-2.5">
-        <img
-          v-if="article.author.avatar_url"
-          :src="article.author.avatar_url"
-          alt=""
-          width="24"
-          height="24"
-          loading="lazy"
-          class="size-6 rounded-full object-cover ring-1 ring-bta-pink/60"
-        >
-        <span v-else class="grid size-6 place-items-center rounded-full bg-bta-pink/20 text-[11px] font-bold text-bta-pink ring-1 ring-bta-pink/60">
-          {{ article.author.name.charAt(0) }}
+        <span class="gc-av size-9">
+          <img
+            v-if="article.author.avatar_url"
+            :src="article.author.avatar_url"
+            alt=""
+            width="36"
+            height="36"
+            loading="lazy"
+            class="gc-avimg"
+          >
+          <span v-else class="gc-avimg grid place-items-center text-sm font-bold text-white">{{ article.author.name.charAt(0) }}</span>
+          <span class="gc-avtint" />
+          <span class="gc-avscan" />
         </span>
         <span class="truncate text-[13px] text-white/80">{{ article.author.name }}</span>
       </div>
