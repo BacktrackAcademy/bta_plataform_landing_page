@@ -146,3 +146,30 @@ export function qaPageSchema(abs: Abs, q: {
     },
   }
 }
+
+/** Perfil de autor/instructor: ProfilePage con Person como entidad principal. */
+export function profilePageSchema(abs: Abs, p: {
+  path: string
+  name: string
+  headline?: string | null
+  description?: string | null
+  image?: string | null
+  sameAs?: string[]
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    'url': abs(p.path),
+    'mainEntity': {
+      '@type': 'Person',
+      '@id': `${abs(p.path)}#person`,
+      'name': p.name,
+      'url': abs(p.path),
+      ...(p.headline ? { jobTitle: p.headline } : {}),
+      ...(p.description ? { description: p.description } : {}),
+      ...(p.image ? { image: p.image } : {}),
+      ...(p.sameAs?.length ? { sameAs: p.sameAs } : {}),
+      'worksFor': { '@type': 'EducationalOrganization', 'name': 'Backtrack Academy', 'url': abs('/') },
+    },
+  }
+}

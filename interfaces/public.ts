@@ -148,3 +148,9 @@ export interface PublicDiscussion extends PublicDiscussionCard {
   updated_at: string
   answers: { author: PublicPerson | null, body_html: string | null, created_at: string }[]
 }
+
+export interface PublicAuthor extends PublicAuthorCard {
+  links: { twitter?: string, linkedin?: string, facebook?: string }
+  articles: PublicArticleCard[]
+  courses: PublicCourseCard[]
+}
