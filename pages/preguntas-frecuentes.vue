@@ -5,7 +5,7 @@ const faqs = [
     a: 'Al tener un perfil en la plataforma puedes medir cuanto tiempo dedicas a estudiar y medir tus avances. Y si tienes cursos Premium podrás verlos por tiempo ilimitado.',
   },
   {
-    q: '¿Qué son las oportunidades y voucher?',
+    q: '¿Qué son las oportunidades y vouchers?',
     a: 'Las oportunidades son lo que te permite rendir exámenes al terminar un curso, cada examen rendido gasta una oportunidad. De igual forma el Voucher es lo que te permite rendir el examen final de especialidades.',
   },
   {

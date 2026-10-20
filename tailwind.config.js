@@ -31,10 +31,10 @@ module.exports = {
       },
       colors: {
         'bta-pink': '#EC1075', // principal
-        'bta-blue': '#141224', // body-back
-        'bta-dark-blue': '#070916', // header
-        'bta-section': '#141224', //
-        'gray-border': '#36364e',
+        'bta-blue': '#0F1022', // body-back (= surface-1 de la plataforma)
+        'bta-dark-blue': '#090A18', // fondo/header (= background de la plataforma)
+        'bta-section': '#14162B', // tarjetas (= surface-2 de la plataforma)
+        'gray-border': '#2A2C47', // = border de la plataforma
         'gray-muted': '#565982',
         'border': 'hsl(var(--border))',
         'input': 'hsl(var(--input))',

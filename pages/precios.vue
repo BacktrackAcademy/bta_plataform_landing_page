@@ -9,17 +9,42 @@ useSeo({
 
 const { signupUrl } = useAppLinks()
 const { data: apiPlans } = await useAPI<Plan[]>('/landing/plans')
-const plans = computed(() => apiPlans.value ?? [])
+const plans = computed(() => (apiPlans.value?.length ? withFreePlan(apiPlans.value) : []))
 const selected = ref<number | null>(null)
 const active = computed(() => selected.value ?? plans.value.find(p => p.recommended)?.id)
+const ctaUrl = (p: Plan) => signupUrl(planCtaPath(p))
+
+// Compras únicas: oportunidades de examen y vouchers de especialidad (sin cambiar de plan).
+interface Addon {
+  id: number
+  name: string
+  kind: 'opportunities' | 'vouchers'
+  price: number
+  old_price: number
+  discount_percent: number
+  opportunities: number
+  vouchers: number
+}
+const { data: apiAddons } = await useAPI<Addon[]>('/landing/addons')
+const addonGroups = computed(() => [
+  { key: 'opportunities', title: 'Oportunidades para exámenes', text: 'Cada examen que rindes al terminar un curso gasta una oportunidad.', cta: 'Comprar oportunidades' },
+  { key: 'vouchers', title: 'Vouchers de especialidad', text: 'Un voucher te permite rendir el examen final de una especialidad.', cta: 'Comprar voucher' },
+].map(g => ({ ...g, items: (apiAddons.value ?? []).filter(a => a.kind === g.key) })).filter(g => g.items.length))
+const addonUrl = (a: Addon) => signupUrl(`/suscripciones/extras?producto=${a.id}`)
+const unitPrice = (a: Addon) => {
+  const n = a.kind === 'vouchers' ? a.vouchers : a.opportunities
+  return n > 1 ? `USD ${(a.price / n).toFixed(2).replace(/\.00$/, '')} c/u` : ''
+}
 
 // Filas de la tabla comparativa: etiqueta + valor por plan (mismo orden que las tarjetas).
 const rows = computed(() => {
-  const feats = plans.value.map((p, i) => planFeatures(p, i))
+  const feats = plans.value.map(p => planFeatures(p))
   return (feats[0] ?? []).map((_, r) => ({
-    label: ['Acceso a todos los cursos', 'Oportunidades para exámenes', 'Especialidades a elección', 'Vouchers para especialidades', 'Certificados de aprobación', 'Acompañamiento', 'Comunidad en Discord'][r],
+    label: ['Acceso a cursos', 'Oportunidades para exámenes', 'Especialidades a elección', 'Vouchers para especialidades', 'Certificados de aprobación', 'Acompañamiento', 'Comunidad en Discord'][r],
     cells: plans.value.map((p, i) => {
       const [text, ok] = feats[i][r]
+      if (r === 0)
+        return { ok, text: p.free ? 'Solo gratuitos' : '' }
       if (r === 1)
         return { ok, text: String(p.opportunities) }
       if (r === 3)
@@ -32,7 +57,7 @@ const rows = computed(() => {
 })
 
 const faqs = [
-  { q: '¿Qué son las oportunidades y voucher?', a: 'Las oportunidades son lo que te permite rendir exámenes al terminar un curso, cada examen rendido gasta una oportunidad. De igual forma el Voucher es lo que te permite rendir el examen final de especialidades.' },
+  { q: '¿Qué son las oportunidades y vouchers?', a: 'Las oportunidades son lo que te permite rendir exámenes al terminar un curso, cada examen rendido gasta una oportunidad. De igual forma el Voucher es lo que te permite rendir el examen final de especialidades.' },
   { q: '¿Cuáles son los métodos de pago?', a: 'El método de pago es a través de PayPal. Si estás en México y no tienes saldo en PayPal, contáctate con nosotros y te contamos sobre las alternativas de pago. Puedes usar Khipu/Payku/Webpay si estás en Chile.' },
   { q: '¿Qué son los cursos Premium?', a: 'Son cursos con contenidos mucho más avanzados. Los ingresos generados de estos cursos son usados para seguir mejorando la plataforma y la infrastructura. Los usuarios que ayuden a hacer crecer la comunidad tendrán acceso a funciones más avanzadas y beneficios.' },
 ]
@@ -73,7 +98,7 @@ const btnOutline = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
         </header>
 
         <div v-if="plans.length" class="mt-14 grid gap-5 md:grid-cols-3">
-          <div v-for="(p, i) in plans" :key="p.id" class="flex flex-col gap-3">
+          <div v-for="p in plans" :key="p.id" class="flex flex-col gap-3">
             <button
               type="button"
               class="flex flex-1 flex-col gap-6 rounded-lg border bg-[#12152b] p-6 text-left transition-all duration-200"
@@ -86,22 +111,22 @@ const btnOutline = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
                 <span v-if="p.recommended" class="rounded bg-bta-pink/15 px-2 py-0.5 text-xs font-medium text-bta-pink">Recomendado</span>
               </div>
               <div>
-                <span class="text-4xl font-semibold">USD {{ p.price }}</span>
+                <span class="text-4xl font-semibold">{{ p.free ? 'Gratis' : `USD ${p.price}` }}</span>
                 <div class="mt-1.5 flex gap-2 text-[13px] text-white/55">
                   <span v-if="p.monthly_price">USD {{ p.monthly_price }} / mes</span>
                   <span v-if="p.price < p.old_price" class="text-emerald-400">Ahorra {{ p.discount_percent }}%</span>
                 </div>
               </div>
               <ul class="flex flex-col gap-2.5 border-t border-white/10 pt-5 text-sm">
-                <li v-for="[label, ok] in planFeatures(p, i)" :key="label" class="flex items-center gap-2.5" :class="ok ? 'text-white' : 'text-white/40'">
+                <li v-for="[label, ok] in planFeatures(p)" :key="label" class="flex items-center gap-2.5" :class="ok ? 'text-white' : 'text-white/40'">
                   <Check v-if="ok" :size="16" class="shrink-0 text-bta-pink" />
                   <Minus v-else :size="16" class="shrink-0" />
                   {{ label }}
                 </li>
               </ul>
             </button>
-            <a :href="signupUrl('/suscripciones')" :class="active === p.id ? btnPrimary : btnOutline">
-              Elegir plan
+            <a :href="ctaUrl(p)" :class="active === p.id ? btnPrimary : btnOutline">
+              {{ p.free ? 'Crear cuenta gratis' : 'Elegir plan' }}
             </a>
           </div>
         </div>
@@ -112,6 +137,44 @@ const btnOutline = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
         <p class="mt-6 max-w-[820px] font-plex text-[13px] leading-relaxed text-white/55">
           Importante: si tu pago recurrente está activado, las suscripciones no tienen derecho a reembolso. Cualquier duda, contáctanos a <a href="mailto:contacto@backtrackacademy.com" class="text-bta-pink hover:underline">contacto@backtrackacademy.com</a>.
         </p>
+      </div>
+    </section>
+
+    <!-- OPORTUNIDADES Y VOUCHERS -->
+    <section v-if="addonGroups.length" id="oportunidades-y-vouchers" class="relative isolate border-t border-white/5">
+      <div class="container py-[clamp(64px,8vw,112px)]">
+        <p :class="eyebrow">
+          Compra única
+        </p>
+        <h2 class="mt-3.5 text-balance font-oswald text-[clamp(28px,3.6vw,48px)] font-medium leading-[1.05]">
+          Oportunidades y vouchers
+        </h2>
+        <p class="mt-4 max-w-[640px] font-plex text-white/70">
+          ¿Te quedaste sin intentos o quieres rendir una especialidad? Compra solo lo que necesitas, sin cambiar de plan. Pago con PayPal.
+        </p>
+        <div v-for="g in addonGroups" :key="g.key" class="mt-12">
+          <h3 class="font-oswald text-xl font-medium uppercase tracking-[.02em]">
+            {{ g.title }}
+          </h3>
+          <p class="mt-1 font-plex text-sm text-white/55">
+            {{ g.text }}
+          </p>
+          <div class="mt-5 grid gap-5 md:grid-cols-3">
+            <div v-for="a in g.items" :key="a.id" class="flex flex-col gap-5 rounded-lg border border-[#262a47] bg-[#12152b] p-6">
+              <span class="font-oswald text-lg font-medium uppercase tracking-[.02em]">{{ a.name }}</span>
+              <div>
+                <span class="text-4xl font-semibold">USD {{ a.price }}</span>
+                <div class="mt-1.5 flex gap-2 text-[13px] text-white/55">
+                  <span v-if="unitPrice(a)">{{ unitPrice(a) }}</span>
+                  <span v-if="a.price < a.old_price" class="text-emerald-400">Ahorra {{ a.discount_percent }}%</span>
+                </div>
+              </div>
+              <a :href="addonUrl(a)" :class="[btnOutline, 'mt-auto']">
+                {{ g.cta }}
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -159,7 +222,7 @@ const btnOutline = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
                   Precio
                 </th>
                 <td v-for="p in plans" :key="p.id" class="p-4 text-center text-white">
-                  USD {{ p.price }}
+                  {{ p.free ? 'Gratis' : `USD ${p.price}` }}
                 </td>
               </tr>
             </tbody>
