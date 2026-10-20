@@ -11,8 +11,8 @@ interface Opinion {
 }
 
 useSeo({
-  title: 'Formación avanzada en ciberseguridad',
-  description: 'Especialidades y cursos de hacking ético y ciberseguridad con instructores de la industria. Aprende con teoría, práctica y certificados.',
+  title: 'Cursos de hacking ético y ciberseguridad en español',
+  description: 'Especialidades y cursos de hacking ético, pentesting y ciberseguridad en español, creados por profesionales de la industria. Empieza con cursos gratis y obtén certificado de aprobación.',
   path: '/',
 })
 
@@ -21,7 +21,7 @@ const { signupUrl } = useAppLinks()
 // Todo el contenido sale de la API pública de Rails. Cada sección se oculta si su dato no llegó:
 // una caída parcial de la API no rompe la home.
 const { data: specialties } = usePublicApi<{ data: PublicSpecialtyCard[] }>('/specialties')
-const { data: featured } = usePublicApi<Paginated<PublicCourseCard>>('/courses', { query: { per_page: 30 } })
+const { data: featured } = usePublicApi<Paginated<PublicCourseCard>>('/courses', { query: { per_page: 100 } })
 const { data: articles } = usePublicApi<Paginated<PublicArticleCard>>('/articles', { query: { per_page: 30 } })
 const { data: opinions } = useAPI<Opinion[]>('/landing/opinions', { params: { limit: 3 } })
 const { data: apiPlans } = useAPI<Plan[]>('/landing/plans')
@@ -44,26 +44,19 @@ function pickDistinct<T>(items: T[], key: (i: T) => string | undefined, n: numbe
   }
   return [...first, ...rest].slice(0, n)
 }
-const courses = computed(() => pickDistinct(featured.value?.data ?? [], c => c.instructor?.username, 6))
+// Los más inscritos primero (prueba social real), un curso por instructor para dar variedad.
+const allCourses = computed(() => featured.value?.data ?? [])
+const courses = computed(() => pickDistinct([...allCourses.value].sort((a, b) => b.students_count - a.students_count), c => c.instructor?.username, 6))
 const latestArticles = computed(() => pickDistinct(articles.value?.data ?? [], a => a.author?.username, 3))
-const totalCourses = computed(() => featured.value?.pagination.total_entries ?? 0)
-const totalHours = computed(() => Math.round(specialtyList.value.reduce((a, s) => a + s.total_duration_seconds, 0) / 3600))
-
-const why = [
-  { n: '01', t: 'Sigue una ruta de aprendizaje', d: 'Nuestras especialidades están preparadas por expertos en ciberseguridad con un enfoque teórico-práctico.' },
-  { n: '02', t: 'Obtén experiencia real', d: 'Cursos con el contenido y las herramientas usados en la industria: instrucción audiovisual combinada con práctica.' },
-  { n: '03', t: 'Recibe orientación y apoyo', d: 'Nuestros mentores están al tanto de tu avance, te guían por el camino indicado y te motivan a cumplir tus objetivos.' },
-]
-
-const plans = computed(() => apiPlans.value ?? [])
+const plans = computed(() => (apiPlans.value?.length ? withFreePlan(apiPlans.value) : []))
 const selectedPlan = ref<number | null>(null)
 const activePlan = computed(() => selectedPlan.value ?? plans.value.find(p => p.recommended)?.id)
+const ctaUrl = (p: Plan) => signupUrl(planCtaPath(p))
 
 const eyebrow = 'font-oswald text-xs font-medium uppercase tracking-[.12em] text-bta-pink'
 const h2 = 'mt-3.5 text-balance font-oswald text-[clamp(32px,4vw,56px)] font-medium leading-[1.05] text-white'
 const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[#D60E6A] px-6 font-medium text-white transition-colors duration-200 hover:bg-[#B80C5B] active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink focus-visible:ring-offset-2 focus-visible:ring-offset-bta-dark-blue'
 const btnOutline = 'inline-flex h-12 items-center justify-center gap-2 rounded-md border border-gray-border px-6 font-medium text-white transition-colors duration-200 hover:bg-white/5 active:translate-y-px'
-const btnGhost = 'inline-flex h-12 items-center justify-center gap-2 rounded-md px-6 font-medium text-white transition-colors duration-200 hover:bg-white/5'
 const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-white transition-colors hover:text-bta-pink'
 </script>
 
@@ -91,39 +84,19 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
             Backtrack Academy
           </p>
           <h1 class="mt-5 text-balance font-oswald text-[clamp(44px,6.6vw,96px)] font-semibold uppercase leading-[.95] tracking-[-.01em]">
-            Formación avanzada en <span class="text-bta-pink">ciberseguridad</span>
+            Aprende <span class="text-bta-pink">hacking ético</span> y ciberseguridad
           </h1>
-          <p class="font-plex mt-8 max-w-[480px] text-pretty text-[clamp(17px,1.4vw,20px)] leading-relaxed text-white/75">
-            Especialidades y cursos de hacking ético creados por profesionales de la industria. Aprende haciendo.
+          <p class="font-plex mt-8 max-w-[520px] text-pretty text-[clamp(17px,1.4vw,20px)] leading-relaxed text-white/75">
+            Especialidades y cursos en español creados por profesionales de la industria. Empieza con cursos gratis y obtén certificado de aprobación.
           </p>
           <div class="mt-10 flex flex-wrap gap-3">
             <a :href="signupUrl()" :class="btnPrimary">
-              Empezar ahora <ArrowRight :size="18" />
+              Crear mi cuenta <ArrowRight :size="18" />
             </a>
-            <NuxtLink to="/cursos" :class="btnGhost">
-              Explorar cursos
+            <NuxtLink :to="{ path: '/cursos', query: { gratis: '1' } }" :class="btnOutline">
+              Ver cursos gratis
             </NuxtLink>
           </div>
-          <dl v-if="totalCourses" class="mt-12 flex flex-wrap gap-x-10 gap-y-4 border-t border-white/15 pt-6 font-inconsolata text-sm">
-            <div>
-              <dt class="sr-only">
-                Cursos
-              </dt>
-              <dd><span class="text-xl text-white">{{ totalCourses }}</span> <span class="text-white/55">cursos</span></dd>
-            </div>
-            <div v-if="specialtyList.length">
-              <dt class="sr-only">
-                Especialidades
-              </dt>
-              <dd><span class="text-xl text-white">{{ specialtyList.length }}</span> <span class="text-white/55">especialidades</span></dd>
-            </div>
-            <div v-if="totalHours">
-              <dt class="sr-only">
-                Horas de contenido
-              </dt>
-              <dd><span class="text-xl text-white">{{ totalHours }}</span> <span class="text-white/55">horas de contenido</span></dd>
-            </div>
-          </dl>
         </div>
       </div>
     </section>
@@ -154,7 +127,8 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
 
     <!-- CURSOS DESTACADOS -->
     <section v-if="courses.length" id="cursos" class="relative isolate border-t border-white/5">
-      <CyberBackground variant="scan" intensity="subtle" glow="right" />
+      <!-- Sin terminal ni glow: las portadas de los cursos son el protagonista de esta sección -->
+      <CyberBackground variant="grid" intensity="faint" glow="none" />
       <div class="container py-[clamp(80px,10vw,144px)]">
         <div class="mb-10 flex flex-wrap items-end justify-between gap-6">
           <div>
@@ -162,7 +136,7 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
               Cursos
             </div>
             <h2 :class="h2">
-              Cursos destacados
+              Cursos más populares
             </h2>
           </div>
           <NuxtLink to="/cursos" :class="sectionLink">
@@ -171,35 +145,6 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
         </div>
         <div class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,340px),1fr))] gap-x-5 gap-y-6">
           <CatalogCourseCard v-for="c in courses" :key="c.slug" :course="c" />
-        </div>
-      </div>
-    </section>
-
-    <!-- POR QUÉ -->
-    <section class="relative isolate border-t border-white/5">
-      <CyberBackground variant="exploit" intensity="faint" glow="none" />
-      <div class="container py-[clamp(80px,10vw,144px)]">
-        <div class="max-w-[960px]">
-          <div class="mb-8 h-1 w-12 bg-bta-pink" />
-          <h2 class="text-balance font-oswald text-[clamp(32px,4vw,56px)] font-medium leading-[1.05]">
-            La mejor manera de convertirse en un experto es aprendiendo de uno
-          </h2>
-          <p class="font-plex mt-7 max-w-[720px] text-pretty text-[clamp(17px,1.5vw,20px)] leading-relaxed text-white/75">
-            Brindamos la experiencia de los mejores profesionales a través de una ruta de aprendizaje que contiene cursos, exámenes y ejercicios prácticos, pensada para que cumplas tus objetivos en ciberseguridad.
-          </p>
-        </div>
-        <div class="mt-[clamp(56px,7vw,96px)] grid gap-x-14 gap-y-10 md:grid-cols-3">
-          <div v-for="w in why" :key="w.n" class="border-t border-gray-border pt-6">
-            <div class="font-inconsolata text-[13px] text-white/55">
-              {{ w.n }}
-            </div>
-            <h3 class="font-plex mt-3 text-xl font-semibold leading-snug">
-              {{ w.t }}
-            </h3>
-            <p class="font-plex mt-2.5 text-pretty text-[15px] leading-relaxed text-white/75">
-              {{ w.d }}
-            </p>
-          </div>
         </div>
       </div>
     </section>
@@ -276,7 +221,7 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
           </NuxtLink>
         </div>
         <div class="grid gap-5 md:grid-cols-3">
-          <div v-for="(p, i) in plans" :key="p.id" class="flex flex-col gap-3">
+          <div v-for="p in plans" :key="p.id" class="flex flex-col gap-3">
             <button
               type="button"
               class="flex flex-1 flex-col gap-6 rounded-lg border bg-bta-section p-6 text-left transition-colors duration-200"
@@ -290,22 +235,22 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
               </div>
               <div>
                 <div class="flex items-baseline gap-1.5">
-                  <span class="text-4xl font-semibold">USD {{ p.price }}</span>
+                  <span class="text-4xl font-semibold">{{ p.free ? 'Gratis' : `USD ${p.price}` }}</span>
                 </div>
                 <div class="mt-1.5 flex gap-2 text-[13px] text-white/55">
                   <span v-if="p.monthly_price">USD {{ p.monthly_price }} / mes</span><span v-if="p.price < p.old_price" class="text-emerald-400">Ahorra {{ p.discount_percent }}%</span>
                 </div>
               </div>
               <ul class="flex flex-col gap-2.5 border-t border-white/5 pt-5 text-sm">
-                <li v-for="[label, ok] in planFeatures(p, i)" :key="label" class="flex items-center gap-2.5" :class="ok ? 'text-white' : 'text-white/40'">
+                <li v-for="[label, ok] in planFeatures(p)" :key="label" class="flex items-center gap-2.5" :class="ok ? 'text-white' : 'text-white/40'">
                   <Check v-if="ok" :size="16" class="text-bta-pink" />
                   <Minus v-else :size="16" />
                   {{ label }}
                 </li>
               </ul>
             </button>
-            <a :href="signupUrl('/suscripciones')" :class="activePlan === p.id ? btnPrimary : btnOutline">
-              Elegir plan
+            <a :href="ctaUrl(p)" :class="activePlan === p.id ? btnPrimary : btnOutline">
+              {{ p.free ? 'Crear cuenta gratis' : 'Elegir plan' }}
             </a>
           </div>
         </div>
