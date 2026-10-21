@@ -89,13 +89,15 @@
 }
 .gc-av img,
 .gc-av > span:first-child { display: block; width: 100%; height: 100%; object-fit: cover; }
-.gc-avimg { filter: grayscale(1) contrast(1.15); }
+.gc-avimg { filter: grayscale(1) contrast(1.2) brightness(0.9); }
 .gc-avtint {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(135deg, #ec1075, #6a1fb0);
+  /* Mismo tinte que la plataforma: primary → brand-violet */
+  background: linear-gradient(135deg, hsl(331 88% 47%), hsl(255 66% 33%));
   mix-blend-mode: color;
+  opacity: 0.8;
 }
 .gc-avscan {
   position: absolute;
@@ -127,17 +129,19 @@
   66% { transform: none; clip-path: inset(0); }
 }
 
-/* Portada de tarjetas: duotono violeta/magenta oscuro, como en la plataforma. */
-.gc-cover { filter: grayscale(0.7) brightness(0.65) contrast(1.15); }
+/* Portada de tarjetas: mismo tratamiento que la plataforma (CourseThumb): gris parcial + tinte violeta→primary
+   suave que cede al hacer hover. Valores = brand-violet / primary de bta_plataform_front. */
+.gc-cover { filter: grayscale(0.55) contrast(1.06) brightness(0.88); }
 .gc-covertint {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(135deg, rgba(236, 16, 117, 0.75), rgba(76, 40, 190, 0.85));
+  background: linear-gradient(135deg, hsl(255 66% 33%) 0%, hsl(331 88% 47%) 100%);
   mix-blend-mode: color;
+  opacity: 0.4;
   transition: opacity 0.3s;
 }
 .gc:hover .gc-covertint,
-.gc:focus-visible .gc-covertint { opacity: 0.6; }
+.gc:focus-visible .gc-covertint { opacity: 0.18; }
 .gc:hover .gc-cover,
-.gc:focus-visible .gc-cover { filter: grayscale(0.4) brightness(0.8) contrast(1.15); }
+.gc:focus-visible .gc-cover { filter: grayscale(0.2) contrast(1.04) brightness(1); }

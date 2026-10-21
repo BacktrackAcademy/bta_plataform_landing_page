@@ -34,3 +34,24 @@ export function prepareArticleHtml(html: string): { html: string, toc: TocItem[]
 export function htmlToText(html: string | null | undefined, max = 5000): string {
   return decode((html ?? '').replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim().slice(0, max)
 }
+
+/**
+ * Parte el HTML de un artículo largo en dos mitades para insertar un CTA a mitad de lectura.
+ * Corta justo antes de un <h2> cercano a la mitad (nunca dentro de un bloque); si no hay suficientes <h2>,
+ * corta tras un </p> cerca del 45 %. Artículos cortos → una sola pieza (el CTA final basta).
+ */
+export function splitArticleHtml(html: string): [string, string | null] {
+  if (html.length < 5000)
+    return [html, null]
+  const h2s = [...html.matchAll(/<h2[\s>]/gi)].map(m => m.index ?? 0)
+  if (h2s.length >= 3) {
+    const target = html.length / 2
+    const at = h2s.slice(1).reduce((best, i) => (Math.abs(i - target) < Math.abs(best - target) ? i : best), h2s[1]!)
+    return [html.slice(0, at), html.slice(at)]
+  }
+  const target = Math.floor(html.length * 0.45)
+  const close = html.indexOf('</p>', target)
+  if (close === -1 || close > html.length * 0.7)
+    return [html, null]
+  return [html.slice(0, close + 4), html.slice(close + 4)]
+}

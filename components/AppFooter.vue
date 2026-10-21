@@ -83,7 +83,7 @@ const year = new Date().getFullYear()
 
       <div class="mt-14 flex flex-col gap-6 border-t border-white/10 pt-6 text-[13px] text-white/45 md:flex-row md:items-center md:justify-between">
         <p class="leading-relaxed">
-          <span class="text-bta-pink">$</span> © {{ year }} Backtrack Academy · Av. Lib. O’Higgis #1302 70, Santiago, Chile · Todos los Derechos Reservados.<span class="foot__cursor" aria-hidden="true">█</span>
+          <span class="text-bta-pink">$</span> © {{ year }} Backtrack Academy · Av. Lib. O’Higgins #1302 70, Santiago, Chile · Todos los Derechos Reservados.<span class="foot__cursor" aria-hidden="true">█</span>
         </p>
         <div class="flex items-center gap-5">
           <span class="font-oswald uppercase tracking-wide text-white/60">Síguenos</span>

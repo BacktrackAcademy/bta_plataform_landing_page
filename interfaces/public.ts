@@ -107,6 +107,7 @@ export interface PublicFilters {
   categories: { slug: string, name: string, courses_count: number }[]
   instructors: { username: string, name: string, courses_count: number }[]
   article_categories: { slug: string, name: string, articles_count: number }[]
+  article_authors?: { username: string, name: string, avatar_url?: string | null, articles_count: number }[]
   discussion_categories: { slug: string, name: string, discussions_count: number }[]
 }
 

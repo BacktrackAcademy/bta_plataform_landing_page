@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PublicArticle } from '~/interfaces/public'
+import type { PublicArticle, PublicFilters } from '~/interfaces/public'
 import { ArrowRight, Clock } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -13,15 +13,39 @@ const a = computed(() => data.value!)
 const path = `/articulo/${slug}`
 const body = computed(() => prepareArticleHtml(a.value.body_html ?? ''))
 const showToc = computed(() => body.value.toc.length >= 3)
+const parts = computed(() => splitArticleHtml(body.value.html))
 
-// Del artículo a la adquisición: especialidad relacionada (preferida) → curso → catálogo.
+// Si el artículo no trae curso ni especialidad relacionados, su categoría lleva al tema de cursos equivalente
+// (en vez de caer al catálogo completo). Las categorías sin equivalente directo se asocian a la más cercana.
+const TOPIC_ALIAS: Record<string, string> = {
+  'wireless-attacks': 'auditorias-wireless',
+  'exploitation-tools': 'pentesting',
+  'reverse-engineering': 'pentesting',
+  'information-gathering': 'pentesting',
+}
+const needsFallback = !a.value.related_specialty && !a.value.related_course
+const { data: filters } = needsFallback
+  ? await usePublicApi<PublicFilters>('/filters')
+  : { data: ref<PublicFilters | null>(null) }
+const topic = computed(() => {
+  const slug = a.value.category?.slug
+  if (!slug)
+    return null
+  const target = TOPIC_ALIAS[slug] ?? slug
+  return filters.value?.categories.find(c => c.slug === target && c.courses_count >= 2) ?? null
+})
+
+// Del artículo a la adquisición: especialidad relacionada (preferida) → curso → tema de la categoría → catálogo.
 const cta = computed(() => {
   if (a.value.related_specialty)
     return { label: 'Explorar especialidad', to: `/especialidad/${a.value.related_specialty.slug}`, name: a.value.related_specialty.name }
   if (a.value.related_course)
     return { label: 'Ver curso', to: `/curso/${a.value.related_course.slug}`, name: a.value.related_course.title }
+  if (topic.value)
+    return { label: 'Ver cursos del tema', to: `/cursos/tema/${topic.value.slug}`, name: topic.value.name }
   return { label: 'Explorar cursos', to: '/cursos', name: null }
 })
+const ctaSignup = computed(() => signupUrl(/^\/(especialidad|curso)\//.test(cta.value.to) ? cta.value.to : undefined))
 
 useSeo(() => ({
   title: a.value.title,
@@ -110,7 +134,29 @@ const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
           </details>
         </aside>
         <div class="min-w-0">
-          <CatalogRichText v-if="body.html" :html="body.html" class="prose-lg prose-headings:scroll-mt-28 prose-img:rounded-lg prose-pre:overflow-x-auto" />
+          <CatalogRichText v-if="parts[0]" :html="parts[0]" class="prose-lg prose-headings:scroll-mt-28 prose-img:rounded-lg prose-pre:overflow-x-auto" />
+
+          <!-- CTA a mitad de lectura: discreto, solo en artículos largos -->
+          <aside v-if="parts[1]" class="my-12 flex flex-wrap items-center justify-between gap-x-8 gap-y-4 rounded-lg border border-gray-border bg-bta-section p-6">
+            <div class="min-w-0">
+              <p class="font-oswald text-xs font-medium uppercase tracking-[.12em] text-bta-pink">
+                Sigue aprendiendo
+              </p>
+              <p class="font-plex mt-1.5 text-pretty text-white/85">
+                <template v-if="cta.name">
+                  Profundiza en este tema con <span class="font-medium text-white">{{ cta.name }}</span>.
+                </template>
+                <template v-else>
+                  Explora los cursos de Backtrack Academy.
+                </template>
+              </p>
+            </div>
+            <NuxtLink :to="cta.to" class="inline-flex h-11 shrink-0 items-center gap-2 rounded-md border border-bta-pink px-5 font-medium text-white transition-colors hover:bg-bta-pink/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink">
+              {{ cta.label }} <ArrowRight :size="16" />
+            </NuxtLink>
+          </aside>
+
+          <CatalogRichText v-if="parts[1]" :html="parts[1]" class="prose-lg prose-headings:scroll-mt-28 prose-img:rounded-lg prose-pre:overflow-x-auto" />
 
           <!-- CTA hacia la academia -->
           <section class="mt-16 rounded-lg border border-gray-border bg-bta-section p-[clamp(24px,4vw,40px)]">
@@ -118,13 +164,13 @@ const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
               ¿Quieres aprender estas técnicas en profundidad?
             </h2>
             <p v-if="cta.name" class="mt-3 text-white/65">
-              Continúa con <span class="text-white">{{ cta.name }}</span> y practica con laboratorios guiados.
+              Continúa tu ruta con <span class="text-white">{{ cta.name }}</span>.
             </p>
             <div class="mt-6 flex flex-wrap gap-3">
               <NuxtLink :to="cta.to" :class="btnPrimary">
                 {{ cta.label }} <ArrowRight :size="18" />
               </NuxtLink>
-              <a :href="signupUrl(cta.to.startsWith('/especialidad') || cta.to.startsWith('/curso') ? cta.to : undefined)" class="inline-flex h-12 items-center rounded-md border border-gray-border px-6 font-medium transition-colors hover:bg-white/5">
+              <a :href="ctaSignup" class="inline-flex h-12 items-center rounded-md border border-gray-border px-6 font-medium transition-colors hover:bg-white/5">
                 Crear cuenta
               </a>
             </div>
