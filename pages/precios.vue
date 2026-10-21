@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, Check, Minus } from 'lucide-vue-next'
+import { ArrowRight, Check, Minus, Target, Ticket } from 'lucide-vue-next'
 
 useSeo({
   title: 'Precios y planes',
@@ -27,32 +27,37 @@ interface Addon {
 }
 const { data: apiAddons } = await useAPI<Addon[]>('/landing/addons')
 const addonGroups = computed(() => [
-  { key: 'opportunities', title: 'Oportunidades para exámenes', text: 'Cada examen que rindes al terminar un curso gasta una oportunidad.', cta: 'Comprar oportunidades' },
-  { key: 'vouchers', title: 'Vouchers de especialidad', text: 'Un voucher te permite rendir el examen final de una especialidad.', cta: 'Comprar voucher' },
+  { key: 'opportunities', title: 'Oportunidades para exámenes', text: 'Cada examen que rindes al terminar un curso gasta una oportunidad.', cta: 'Comprar oportunidades', unit: ['oportunidad', 'oportunidades'] },
+  { key: 'vouchers', title: 'Vouchers de especialidad', text: 'Un voucher te permite rendir el examen final de una especialidad.', cta: 'Comprar voucher', unit: ['voucher', 'vouchers'] },
 ].map(g => ({ ...g, items: (apiAddons.value ?? []).filter(a => a.kind === g.key) })).filter(g => g.items.length))
 const addonUrl = (a: Addon) => signupUrl(`/suscripciones/extras?producto=${a.id}`)
-const unitPrice = (a: Addon) => {
-  const n = a.kind === 'vouchers' ? a.vouchers : a.opportunities
-  return n > 1 ? `USD ${(a.price / n).toFixed(2).replace(/\.00$/, '')} c/u` : ''
+const addonQty = (a: Addon) => (a.kind === 'vouchers' ? a.vouchers : a.opportunities) || 1
+const fmt = (n: number) => n.toFixed(2).replace(/\.00$/, '').replace('.', ',')
+const unitPrice = (a: Addon) => (addonQty(a) > 1 ? `USD ${fmt(a.price / addonQty(a))} c/u` : '')
+
+// Precio de la unidad suelta de cada tipo: base para medir cuánto se ahorra al comprar el pack.
+const singlePrice = computed(() => {
+  const unit = (kind: Addon['kind']) => {
+    const one = (apiAddons.value ?? []).find(a => a.kind === kind && addonQty(a) === 1)
+    return one?.price ?? null
+  }
+  return { opportunities: unit('opportunities'), vouchers: unit('vouchers') }
+})
+// % de ahorro del pack frente a comprar la misma cantidad de a una.
+const addonSaving = (a: Addon) => {
+  const base = singlePrice.value[a.kind]
+  const n = addonQty(a)
+  return base && n > 1 ? Math.round((1 - a.price / n / base) * 100) : 0
 }
+const bestAddonId = (items: Addon[]) =>
+  items.reduce<Addon | null>((best, a) => (addonSaving(a) > (best ? addonSaving(best) : 0) ? a : best), null)?.id ?? null
 
 // Filas de la tabla comparativa: etiqueta + valor por plan (mismo orden que las tarjetas).
 const rows = computed(() => {
-  const feats = plans.value.map(p => planFeatures(p))
-  return (feats[0] ?? []).map((_, r) => ({
-    label: ['Acceso a cursos', 'Oportunidades para exámenes', 'Especialidades a elección', 'Vouchers para especialidades', 'Certificados de aprobación', 'Acompañamiento', 'Comunidad en Discord'][r],
-    cells: plans.value.map((p, i) => {
-      const [text, ok] = feats[i][r]
-      if (r === 0)
-        return { ok, text: p.free ? 'Solo gratuitos' : '' }
-      if (r === 1)
-        return { ok, text: String(p.opportunities) }
-      if (r === 3)
-        return { ok, text: String(p.vouchers) }
-      if (r === 2)
-        return { ok, text: ok ? (/^\d+/.exec(text)?.[0] ?? '') : '' }
-      return { ok, text: '' }
-    }),
+  const perPlan = plans.value.map(p => planRows(p))
+  return (perPlan[0] ?? []).map((r, i) => ({
+    label: r.label,
+    cells: perPlan.map(rows => ({ ok: rows[i].ok, text: rows[i].value ?? '' })),
   }))
 })
 
@@ -93,7 +98,7 @@ const btnOutline = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
             Conviértete en un <span class="text-bta-pink">hacker profesional</span>
           </h1>
           <p class="mt-6 max-w-[600px] text-pretty font-plex text-lg leading-relaxed text-white/75">
-            Acceso a todos nuestros cursos, exámenes, certificados y acompañamiento. Elige el plan que va con tu ritmo.
+            Acceso a todos nuestros cursos, exámenes y certificados. Elige el plan que va con tu ritmo.
           </p>
         </header>
 
@@ -159,19 +164,37 @@ const btnOutline = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
           <p class="mt-1 font-plex text-sm text-white/55">
             {{ g.text }}
           </p>
-          <div class="mt-5 grid gap-5 md:grid-cols-3">
-            <div v-for="a in g.items" :key="a.id" class="flex flex-col gap-5 rounded-lg border border-[#262a47] bg-[#12152b] p-6">
-              <span class="font-oswald text-lg font-medium uppercase tracking-[.02em]">{{ a.name }}</span>
-              <div>
-                <span class="text-4xl font-semibold">USD {{ a.price }}</span>
-                <div class="mt-1.5 flex gap-2 text-[13px] text-white/55">
-                  <span v-if="unitPrice(a)">{{ unitPrice(a) }}</span>
-                  <span v-if="a.price < a.old_price" class="text-emerald-400">Ahorra {{ a.discount_percent }}%</span>
+          <div class="mt-6 grid gap-4 md:grid-cols-3">
+            <div
+              v-for="a in g.items"
+              :key="a.id"
+              class="relative flex flex-col gap-4 rounded-lg border bg-[#12152b] p-5 transition-all duration-200 hover:-translate-y-0.5"
+              :class="bestAddonId(g.items) === a.id ? 'border-bta-pink shadow-[0_8px_30px_-12px_rgba(236,16,117,.4)]' : 'border-[#262a47] hover:border-white/30'"
+            >
+              <span v-if="bestAddonId(g.items) === a.id" class="absolute -top-2.5 right-4 rounded bg-bta-pink px-2 py-0.5 text-xs font-medium text-white">Mejor precio</span>
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <span class="flex size-10 shrink-0 items-center justify-center rounded-md bg-bta-pink/10 text-bta-pink">
+                    <Target v-if="g.key === 'opportunities'" :size="20" />
+                    <Ticket v-else :size="20" />
+                  </span>
+                  <div>
+                    <span class="block font-oswald text-3xl font-semibold leading-none">{{ addonQty(a) }}</span>
+                    <span class="mt-1 block font-oswald text-xs uppercase tracking-[.06em] text-white/60">{{ g.unit[addonQty(a) === 1 ? 0 : 1] }}</span>
+                  </div>
                 </div>
+                <span class="whitespace-nowrap font-oswald text-2xl font-semibold">USD {{ a.price }}</span>
               </div>
-              <a :href="addonUrl(a)" :class="[btnOutline, 'mt-auto']">
-                {{ g.cta }}
-              </a>
+              <div class="mt-auto flex items-center justify-between gap-3 border-t border-white/10 pt-4">
+                <div class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px]">
+                  <span v-if="addonSaving(a) > 0" class="rounded bg-emerald-400/10 px-1.5 py-0.5 font-medium text-emerald-400">Ahorras {{ addonSaving(a) }}%</span>
+                  <span v-else-if="a.price < a.old_price" class="rounded bg-emerald-400/10 px-1.5 py-0.5 font-medium text-emerald-400">Ahorra {{ a.discount_percent }}%</span>
+                  <span class="text-white/55">{{ unitPrice(a) || 'Compra única' }}</span>
+                </div>
+                <a :href="addonUrl(a)" :class="[bestAddonId(g.items) === a.id ? btnPrimary : btnOutline, '!h-9 shrink-0 !px-4 !text-sm']">
+                  Comprar
+                </a>
+              </div>
             </div>
           </div>
         </div>
