@@ -33,11 +33,11 @@ const stats = computed(() => [
 type Tab = 'nuevos' | 'populares' | 'gratis'
 const tab = ref<Tab>('nuevos')
 const launches = computed(() => allCourses.value.filter(c => c.coming_soon).slice(0, 2))
-const popular = computed(() => [...allCourses.value].filter(c => !c.coming_soon).sort((a, b) => b.students_count - a.students_count).slice(0, 4))
+const popular = computed(() => [...allCourses.value].filter(c => !c.coming_soon).sort((a, b) => b.students_count - a.students_count).slice(0, 3))
 const tabs = computed(() => ([
   { id: 'nuevos', label: 'Nuevos lanzamientos', list: launches.value },
   { id: 'populares', label: 'Más populares', list: popular.value },
-  { id: 'gratis', label: 'Gratis', list: freeCourses.value.slice(0, 4) },
+  { id: 'gratis', label: 'Gratis', list: freeCourses.value.slice(0, 3) },
 ] as { id: Tab, label: string, list: PublicCourseCard[] }[]).filter(t => t.list.length))
 const shown = computed(() => tabs.value.find(t => t.id === tab.value) ?? tabs.value[0])
 
@@ -84,9 +84,6 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
       <div class="glow-r" aria-hidden="true" />
       <div class="glow-b" aria-hidden="true" />
       <div class="wrap rel">
-        <div class="badge bta-l-rise">
-          <span class="dot" aria-hidden="true" />Formación en ciberseguridad, en español
-        </div>
         <h1 class="h1 bta-l-rise d1">
           Cursos de Hacking Ético y <em>Ciberseguridad Online</em>
         </h1>
@@ -120,7 +117,8 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
     </div>
 
     <!-- POR QUÉ -->
-    <section id="por-que" class="sec">
+    <section id="por-que" class="sec isolate">
+      <CyberBackground variant="recon" intensity="subtle" glow="left" />
       <div class="wrap">
         <div class="sec-head">
           <div>
@@ -162,8 +160,8 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
     </section>
 
     <!-- CURSOS DESTACADOS -->
-    <section v-if="shown" id="cursos" class="sec">
-      <div class="glow-b glow-cursos" aria-hidden="true" />
+    <section v-if="shown" id="cursos" class="sec isolate">
+      <CyberBackground variant="grid" intensity="faint" glow="none" />
       <div class="wrap rel">
         <div class="sec-head">
           <div>
@@ -173,9 +171,12 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
             <h2 class="h2">
               Cursos destacados
             </h2>
+            <p class="lead">
+              Practica con laboratorios reales y aprende las técnicas que usan los profesionales: desde tu primera vulnerabilidad hasta ataques avanzados.
+            </p>
           </div>
-          <NuxtLink to="/cursos" class="link">
-            Ver los {{ coursesTotal }} cursos <span aria-hidden="true">→</span>
+          <NuxtLink to="/cursos" class="btn btn-o">
+            Ver los {{ coursesTotal }} cursos <span class="arr" aria-hidden="true">→</span>
           </NuxtLink>
         </div>
         <div class="tabs" role="tablist" aria-label="Filtrar cursos">
@@ -193,38 +194,14 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
           </button>
         </div>
         <div class="cgrid" :class="{ two: shown.id === 'nuevos' }">
-          <NuxtLink v-for="c in shown.list" :key="c.slug" :to="`/curso/${c.slug}`" class="card" :class="{ wide: shown.id === 'nuevos' }">
-            <div class="cover">
-              <img v-if="c.image_thumb_url || c.image_url" :src="(shown.id === 'nuevos' ? c.image_url || c.image_thumb_url : c.image_thumb_url || c.image_url)!" alt="" loading="lazy" decoding="async">
-              <span v-if="shown.id === 'nuevos'" class="chip-tl tag tag-new">Nuevo lanzamiento</span>
-              <span v-else-if="c.is_free" class="chip-tl tag tag-free">Gratis</span>
-              <span v-if="c.level" class="chip-tr lvl"><span class="bars" aria-hidden="true"><i v-for="n in 3" :key="n" :class="{ on: n <= levelBars(c.level) }" /></span>{{ c.level }}</span>
-            </div>
-            <div class="cbody">
-              <h3 class="ctitle">
-                {{ c.title }}
-              </h3>
-              <p v-if="c.summary" class="cdesc">
-                {{ c.summary }}
-              </p>
-              <div v-if="c.instructor" class="who">
-                {{ c.instructor.name }}
-              </div>
-              <div class="cmeta">
-                <span v-if="c.lessons_count">{{ c.lessons_count }} lecciones</span><span v-if="c.duration_seconds">{{ formatDuration(c.duration_seconds) }}</span>
-              </div>
-              <div class="cfoot">
-                <span v-if="c.coming_soon" class="soon">Próximamente</span>
-                <span class="go">Conocer el curso <span aria-hidden="true">→</span></span>
-              </div>
-            </div>
-          </NuxtLink>
+          <CatalogCourseCard v-for="c in shown.list" :key="c.slug" :course="c" />
         </div>
       </div>
     </section>
 
     <!-- ARTÍCULOS -->
-    <section v-if="featured" id="articulos" class="sec sec-articulos">
+    <section v-if="featured" id="articulos" class="sec sec-articulos isolate">
+      <CyberBackground variant="http" intensity="subtle" glow="left" />
       <div class="wrap">
         <div class="sec-head">
           <div>
@@ -294,7 +271,8 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
     </section>
 
     <!-- PLANES -->
-    <section v-if="plans.length" id="planes" class="sec">
+    <section v-if="plans.length" id="planes" class="sec isolate">
+      <CyberBackground variant="grid" intensity="faint" glow="none" />
       <div class="glow-r glow-planes" aria-hidden="true" />
       <div class="wrap rel">
         <div class="sec-head">
@@ -309,8 +287,8 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
               Comienza gratis con nuestros cursos de iniciación o accede al catálogo completo con nuestros planes de pago.
             </p>
           </div>
-          <NuxtLink to="/precios" class="link">
-            Comparar planes <span aria-hidden="true">→</span>
+          <NuxtLink to="/precios" class="btn btn-o">
+            Comparar planes <span class="arr" aria-hidden="true">→</span>
           </NuxtLink>
         </div>
         <div class="pgrid">
@@ -347,7 +325,8 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
     </section>
 
     <!-- PREGUNTAS FRECUENTES -->
-    <section id="faq" class="sec">
+    <section id="faq" class="sec isolate">
+      <CyberBackground variant="topology" intensity="faint" glow="right" flip />
       <div class="wrap fgrid">
         <div>
           <div class="eyebrow">
@@ -375,7 +354,8 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
     </section>
 
     <!-- CTA FINAL CON CHARLIE -->
-    <section id="registro" class="sec sec-cta">
+    <section id="registro" class="sec sec-cta isolate">
+      <CyberBackground variant="prompt" intensity="normal" glow="center" mask="soft" />
       <div class="wrap">
         <div class="cta">
           <div class="cta-bg" aria-hidden="true" />

@@ -5,16 +5,6 @@
 .bta-l{background:var(--noche);color:#fff;font-family:'Inconsolata',monospace;min-width:0;overflow-x:clip}
 .bta-l .wrap{max-width:1200px;margin:0 auto;padding:0 32px;box-sizing:border-box}
 .bta-l *:focus-visible{outline:2px solid #fff;outline-offset:2px}
-.bta-l .hdr{position:sticky;top:0;z-index:50;background:rgba(7,9,22,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06)}
-.bta-l .hdr-in{height:72px;display:flex;align-items:center;gap:32px}
-.bta-l .nav{display:flex;align-items:center;gap:28px;margin:0 auto;font-family:'Oswald',sans-serif;font-size:14px;text-transform:uppercase;letter-spacing:.04em}
-.bta-l .nav a{position:relative;padding:8px 0;color:rgba(255,255,255,.82);transition:color .2s}
-.bta-l .nav a:hover{color:#fff}
-.bta-l .nav a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--rosa);transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
-.bta-l .nav a:hover::after{transform:scaleX(1)}
-.bta-l .hdr-cta{display:flex;align-items:center;gap:20px;font-family:'Oswald',sans-serif;font-size:14px;text-transform:uppercase;letter-spacing:.04em}
-.bta-l .burger{display:none;margin-left:auto;width:44px;height:44px;border:1px solid var(--borde);border-radius:6px;background:transparent;color:#fff;cursor:pointer;align-items:center;justify-content:center}
-.bta-l .mnav{display:none}
 .bta-l .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 22px;border-radius:6px;font-family:'Inconsolata',monospace;font-size:16px;font-weight:500;transition:background .2s,border-color .2s,transform .2s;box-sizing:border-box;cursor:pointer;white-space:nowrap}
 .bta-l .btn-p{background:var(--rosa-boton);color:#fff}
 .bta-l .btn-p:hover{background:#b80c5b;color:#fff}
@@ -25,9 +15,11 @@
 .bta-l .btn:hover .arr{transform:translateX(3px)}
 .bta-l .eyebrow{font-family:'Oswald',sans-serif;font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--rosa)}
 .bta-l .h2{font-family:'Oswald',sans-serif;font-weight:500;font-size:clamp(32px,4vw,52px);line-height:1.05;margin:14px 0 0;text-wrap:balance}
-.bta-l .lead{font-family:'IBM Plex Sans',sans-serif;font-size:17px;line-height:1.6;color:var(--p);margin:18px 0 0;max-width:560px;text-wrap:pretty}
+.bta-l .lead{font-family:'IBM Plex Sans',sans-serif;font-size:18px;font-weight:300;line-height:1.7;letter-spacing:.005em;color:var(--p);margin:18px 0 0;max-width:580px;text-wrap:pretty;-webkit-font-smoothing:antialiased}
 .bta-l .sec{padding:clamp(80px,9vw,128px) 0;border-top:1px solid rgba(255,255,255,.05);position:relative}
 .bta-l .sec-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:44px}
+.bta-l .sec-head .btn{flex-shrink:0}
+.bta-l .sec-head .lead{max-width:700px}
 .bta-l .link{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:500;color:#fff}
 .bta-l .link:hover{color:var(--rosa)}
 .bta-l .hero{position:relative;overflow:hidden;padding:clamp(88px,11vw,150px) 0 72px;text-align:center}
@@ -36,9 +28,9 @@
 .bta-l .glow-b{position:absolute;width:680px;height:680px;right:-260px;top:80px;background:radial-gradient(circle,rgba(70,100,230,.13),transparent 65%);pointer-events:none}
 .bta-l .badge{display:inline-flex;align-items:center;gap:10px;padding:7px 14px;border:1px solid var(--borde);border-radius:4px;background:rgba(18,21,43,.7);font-size:14px;color:var(--p)}
 .bta-l .dot{width:7px;height:7px;border-radius:50%;background:var(--rosa);box-shadow:0 0 0 4px rgba(236,16,117,.18)}
-.bta-l .h1{font-family:'Oswald',sans-serif;font-weight:600;text-transform:uppercase;font-size:clamp(42px,6.2vw,88px);line-height:1.12;letter-spacing:-.01em;margin:28px auto 0;max-width:1040px;text-wrap:balance}
+.bta-l .h1{font-family:'Oswald',sans-serif;font-weight:600;text-transform:uppercase;font-size:clamp(42px,6.2vw,88px);line-height:1.12;letter-spacing:-.01em;margin:0 auto;max-width:1040px;text-wrap:balance}
 .bta-l .h1 em{font-style:normal;color:var(--rosa)}
-.bta-l .hero .lead{margin:26px auto 0;font-size:clamp(17px,1.4vw,20px);max-width:620px}
+.bta-l .hero .lead{margin:28px auto 0;font-size:clamp(18px,1.5vw,21px);font-weight:300;line-height:1.65;color:rgba(255,255,255,.72);max-width:600px;text-wrap:balance}
 .bta-l .hero-cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:38px}
 .bta-l .hero-sub{margin-top:22px;font-size:15px;color:var(--meta)}
 .bta-l .hero-sub a{color:#fff;border-bottom:1px solid rgba(236,16,117,.6)}
@@ -78,7 +70,7 @@
 .bta-l .tab{height:40px;padding:0 16px;border:0;border-radius:6px;background:transparent;color:var(--p);font-family:'Inconsolata',monospace;font-size:15px;font-weight:500;cursor:pointer;transition:background .2s,color .2s}
 .bta-l .tab:hover{color:#fff}
 .bta-l .tab.on{background:#fff;color:#070916}
-.bta-l .cgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.bta-l .cgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
 .bta-l .cgrid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
 .bta-l .card{display:flex;flex-direction:column;background:var(--sup);border:1px solid var(--borde);border-radius:8px;overflow:hidden;color:#fff;transition:border-color .25s,transform .25s,box-shadow .25s}
 .bta-l .card:hover{border-color:rgba(236,16,117,.5);transform:translateY(-3px);box-shadow:0 18px 40px -24px rgba(236,16,117,.45);color:#fff}
@@ -182,11 +174,6 @@
 .bta-l .row-d{display:none}
 }
 @media (max-width:920px){
-.bta-l .nav,.bta-l .hdr-cta{display:none}
-.bta-l .burger{display:inline-flex}
-.bta-l .mnav{display:block;border-top:1px solid rgba(255,255,255,.06);background:#070916;padding:8px 0 24px}
-.bta-l .mnav a.ml{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--borde);font-family:'Oswald',sans-serif;font-size:20px;text-transform:uppercase}
-.bta-l .mnav .mbtns{display:grid;gap:10px;margin-top:20px}
 .bta-l .agrid,.bta-l .pgrid,.bta-l .fgrid,.bta-l .cta{grid-template-columns:minmax(0,1fr)}
 .bta-l .fgrid{gap:28px}
 .bta-l .charlie{justify-content:center;padding:0 16px 24px}
@@ -258,9 +245,6 @@
 /* Estilos que en el prototipo iban en línea (style="…"): mismos valores. */
 .bta-l .rel{position:relative}
 .bta-l .pink{color:var(--rosa)}
-.bta-l .hdr-logo{display:flex;flex:none}
-.bta-l .hdr-logo img{display:block;width:124px;height:auto}
-.bta-l .hdr-btn{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.04em}
 .bta-l .tabs{margin-bottom:28px}
 .bta-l .glow-cursos{top:10%;right:-320px}
 .bta-l .glow-planes{top:20%}

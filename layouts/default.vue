@@ -1,6 +1,6 @@
 <template>
   <div class="bg-bta-dark-blue">
-    <AppHeader />
+    <LandingHeader />
     <slot />
     <AppFooter />
   </div>

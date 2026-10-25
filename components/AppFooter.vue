@@ -43,7 +43,7 @@ const year = new Date().getFullYear()
           <i class="size-2.5 rounded-full bg-white/15" />
           <i class="size-2.5 rounded-full bg-bta-pink/70" />
         </span>
-        <span><span class="text-bta-pink">root@backtrack</span>:~$ ls -la /backtrack</span>
+        <span><span class="text-bta-pink">root@backtrackacademy</span>:~$ ls -la /backtrackacademy</span>
         <span class="h-px flex-1 bg-gradient-to-r from-white/15 to-transparent" aria-hidden="true" />
       </div>
 
