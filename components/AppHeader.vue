@@ -5,13 +5,12 @@ const { loginUrl, signupUrl } = useAppLinks()
 const route = useRoute()
 const menuOpen = ref(false)
 
-// Secciones del sitio público; las fichas (/curso/x, /articulo/x) marcan su sección como activa.
+// Secciones del menú aprobado; las fichas (/curso/x, /articulo/x) marcan su sección como activa.
+// Especialidades y Debates siguen existiendo (rutas y footer), solo salen del menú principal.
 const links = [
-  { name: 'Cursos', to: '/cursos', match: ['/cursos', '/curso'] },
-  { name: 'Especialidades', to: '/especialidades', match: ['/especialidades', '/especialidad'] },
+  { name: 'Cursos', to: '/cursos', match: ['/cursos', '/curso', '/especialidades', '/especialidad'] },
   { name: 'Artículos', to: '/articulos', match: ['/articulos', '/articulo', '/autor'] },
-  { name: 'Debates', to: '/debates', match: ['/debates', '/debate'] },
-  { name: 'Precios', to: '/precios', match: ['/precios'] },
+  { name: 'Planes', to: '/precios', match: ['/precios'] },
 ]
 
 function isActive(match: string[]) {
@@ -45,7 +44,7 @@ watch(() => route.fullPath, () => (menuOpen.value = false))
             :href="signupUrl()"
             class="rounded-md bg-[#D60E6A] px-4 py-2 text-white transition-colors duration-200 hover:bg-[#B80C5B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink focus-visible:ring-offset-2 focus-visible:ring-offset-bta-dark-blue"
           >
-            Empezar ahora
+            Crear cuenta
           </a>
         </div>
 

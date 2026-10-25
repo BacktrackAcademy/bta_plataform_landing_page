@@ -15,7 +15,7 @@ const { loginUrl, signupUrl } = useAppLinks()
       </li>
     </ul>
     <a :href="signupUrl()" class="block rounded-lg bg-[#D60E6A] py-3 text-center font-oswald text-xl text-white">
-      Empezar ahora
+      Crear cuenta
     </a>
     <a :href="loginUrl()" class="mt-3 block rounded-lg border border-gray-border py-3 text-center font-oswald text-xl text-white">
       Iniciar sesión

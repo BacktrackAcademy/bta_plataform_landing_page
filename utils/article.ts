@@ -30,6 +30,48 @@ export function prepareArticleHtml(html: string): { html: string, toc: TocItem[]
   return { html: withIds.replace(/<img(?![^>]*\sloading=)/gi, '<img loading="lazy" decoding="async"'), toc }
 }
 
+const INLINE_TAGS = ['strong', 'b', 'em', 'i', 'a', 'span', 'code', 'u', 's', 'sub', 'sup', 'mark']
+function visibleText(h: string) {
+  return decode(h.replace(/<[^>]*>/g, '')).replace(/\xA0/g, ' ').trim()
+}
+function balanced(h: string) {
+  return INLINE_TAGS.every(t =>
+    (h.match(new RegExp(`<${t}(?:\\s[^>]*)?>`, 'gi')) ?? []).length === (h.match(new RegExp(`</${t}>`, 'gi')) ?? []).length)
+}
+
+/**
+ * El editor escribe el punto aparte como `<br>` dentro de un mismo `<p>`, así que la separación entre párrafos no se ve.
+ * Un doble `<br>`, o un `<br>` entre oraciones (cierre de oración antes y mayúscula, número o ¿¡ después), se convierte
+ * en un párrafo propio. Los saltos de línea de listas o líneas sueltas se mantienen. El texto no cambia.
+ */
+export function splitParagraphBreaks(html: string): string {
+  return html.replace(/<p(\s[^>]*)?>([\s\S]*?)<\/p>/gi, (match, attrs: string | undefined, inner: string) => {
+    if (!/<br/i.test(inner))
+      return match
+    const parts: string[] = []
+    const re = /(?:<br\s*\/?>\s*)+/gi
+    let cur = ''
+    let pos = 0
+    for (let br = re.exec(inner); br; br = re.exec(inner)) {
+      const seg = cur + inner.slice(pos, br.index)
+      const prev = visibleText(seg)
+      const next = visibleText(inner.slice(re.lastIndex))
+      const double = (br[0].match(/<br/gi) ?? []).length >= 2
+      const sentence = /[.!?:…)»”"]$/.test(prev) && /^[¿¡A-ZÁÉÍÓÚÑ0-9"“«(]/.test(next)
+      if (prev && next && balanced(seg) && (double || sentence)) {
+        parts.push(seg.trim())
+        cur = ''
+      }
+      else {
+        cur = seg + br[0]
+      }
+      pos = re.lastIndex
+    }
+    parts.push((cur + inner.slice(pos)).trim())
+    return parts.filter(Boolean).map(p => `<p${attrs ?? ''}>${p}</p>`).join('')
+  })
+}
+
 /** HTML (ya saneado) → texto plano, para JSON-LD y resúmenes. */
 export function htmlToText(html: string | null | undefined, max = 5000): string {
   return decode((html ?? '').replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim().slice(0, max)
