@@ -50,7 +50,7 @@ export function useArticlesListing(facet?: ArticleFacet) {
       return `Técnicas, herramientas y novedades sobre ${category.value.name} escritas por profesionales de la industria.`
     if (author.value)
       return `Todo lo que ${author.value.name} ha publicado sobre ciberseguridad en Backtrack Academy.`
-    return 'Técnicas, herramientas y novedades de ciberseguridad escritas por quienes trabajan en el campo.'
+    return 'Explora guías, tutoriales y análisis sobre pentesting, seguridad informática y herramientas utilizadas en la práctica.'
   })
 
   function search(value: string) {

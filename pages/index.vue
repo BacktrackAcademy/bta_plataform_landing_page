@@ -1,14 +1,8 @@
 <script setup lang="ts">
-import type { Paginated, PublicArticleCard, PublicCourseCard, PublicSpecialtyCard } from '~/interfaces/public'
-import { ArrowRight, Check, Minus, Star } from 'lucide-vue-next'
+import type { Paginated, PublicArticleCard, PublicCourseCard } from '~/interfaces/public'
 
-interface Opinion {
-  id: number
-  opinion: string
-  evaluation: number
-  user: { name: string, username: string }
-  course: { titulo: string, slug: string }
-}
+// Landing aprobada (lienzo «BTA Landing»): estructura, textos y estilos del prototipo con datos reales de la API.
+definePageMeta({ layout: 'landing' })
 
 useSeo({
   title: 'Cursos de hacking ético y ciberseguridad en español',
@@ -18,183 +12,342 @@ useSeo({
 
 const { signupUrl } = useAppLinks()
 
-// Todo el contenido sale de la API pública de Rails. Cada sección se oculta si su dato no llegó:
-// una caída parcial de la API no rompe la home.
-const { data: specialties } = usePublicApi<{ data: PublicSpecialtyCard[] }>('/specialties')
-const { data: featured } = usePublicApi<Paginated<PublicCourseCard>>('/courses', { query: { per_page: 100 } })
-const { data: articles } = usePublicApi<Paginated<PublicArticleCard>>('/articles', { query: { per_page: 30 } })
-const { data: opinions } = useAPI<Opinion[]>('/landing/opinions', { params: { limit: 3 } })
+// Cada sección se oculta si su dato no llegó: una caída parcial de la API no rompe la home.
+const { data: coursesRes } = usePublicApi<Paginated<PublicCourseCard>>('/courses', { query: { per_page: 100 } })
+const { data: articlesRes } = usePublicApi<Paginated<PublicArticleCard>>('/articles', { query: { per_page: 4 } })
 const { data: apiPlans } = useAPI<Plan[]>('/landing/plans')
 
-const specialtyList = computed(() => (specialties.value?.data ?? []).filter(s => s.courses_count > 0))
-// Más recientes primero (la API ya ordena así), un curso por instructor; si no alcanzan, se completa con los siguientes más nuevos.
-function pickDistinct<T>(items: T[], key: (i: T) => string | undefined, n: number): T[] {
-  const seen = new Set<string>()
-  const first: T[] = []
-  const rest: T[] = []
-  for (const it of items) {
-    const k = key(it)
-    if (k && !seen.has(k)) {
-      seen.add(k)
-      first.push(it)
-    }
-    else {
-      rest.push(it)
-    }
-  }
-  return [...first, ...rest].slice(0, n)
+interface Opinion {
+  id: number
+  opinion: string
+  evaluation: number
+  user: { name: string, username: string }
+  course: { titulo: string, slug: string }
 }
-// Los más inscritos primero (prueba social real), un curso por instructor para dar variedad.
-const allCourses = computed(() => featured.value?.data ?? [])
-const courses = computed(() => pickDistinct([...allCourses.value].sort((a, b) => b.students_count - a.students_count), c => c.instructor?.username, 6))
-const latestArticles = computed(() => pickDistinct(articles.value?.data ?? [], a => a.author?.username, 3))
-const plans = computed(() => (apiPlans.value?.length ? withFreePlan(apiPlans.value) : []))
-const selectedPlan = ref<number | null>(null)
-const activePlan = computed(() => selectedPlan.value ?? plans.value.find(p => p.recommended)?.id)
-const ctaUrl = (p: Plan) => signupUrl(planCtaPath(p))
+const { data: opinions } = useAPI<Opinion[]>('/landing/opinions?limit=3')
 
-const eyebrow = 'font-oswald text-xs font-medium uppercase tracking-[.12em] text-bta-pink'
-const h2 = 'mt-3.5 text-balance font-oswald text-[clamp(32px,4vw,56px)] font-medium leading-[1.05] text-white'
-const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[#D60E6A] px-6 font-medium text-white transition-colors duration-200 hover:bg-[#B80C5B] active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink focus-visible:ring-offset-2 focus-visible:ring-offset-bta-dark-blue'
-const btnOutline = 'inline-flex h-12 items-center justify-center gap-2 rounded-md border border-gray-border px-6 font-medium text-white transition-colors duration-200 hover:bg-white/5 active:translate-y-px'
-const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-white transition-colors hover:text-bta-pink'
+const allCourses = computed(() => coursesRes.value?.data ?? [])
+const coursesTotal = computed(() => coursesRes.value?.pagination.total_entries ?? allCourses.value.length)
+const freeCourses = computed(() => allCourses.value.filter(c => c.is_free))
+const articlesTotal = computed(() => articlesRes.value?.pagination.total_entries ?? 0)
+const stats = computed(() => [
+  { n: coursesTotal.value, label: 'cursos' },
+  { n: freeCourses.value.length, label: 'cursos gratis' },
+  { n: articlesTotal.value, label: 'artículos técnicos' },
+].filter(s => s.n > 0))
+
+// Cursos destacados. «Nuevos lanzamientos» solo muestra cursos marcados como próximos lanzamientos (`coming_soon`);
+// si la API no entrega ninguno, la pestaña se oculta (sin reemplazarla por cursos antiguos) y la sección parte en «Más populares».
+type Tab = 'nuevos' | 'populares' | 'gratis'
+const tab = ref<Tab>('nuevos')
+const launches = computed(() => allCourses.value.filter(c => c.coming_soon).slice(0, 2))
+const popular = computed(() => [...allCourses.value].filter(c => !c.coming_soon).sort((a, b) => b.students_count - a.students_count).slice(0, 3))
+const tabs = computed(() => ([
+  { id: 'nuevos', label: 'Nuevos lanzamientos', list: launches.value },
+  { id: 'populares', label: 'Más populares', list: popular.value },
+  { id: 'gratis', label: 'Gratis', list: freeCourses.value.slice(0, 3) },
+] as { id: Tab, label: string, list: PublicCourseCard[] }[]).filter(t => t.list.length))
+const shown = computed(() => tabs.value.find(t => t.id === tab.value) ?? tabs.value[0])
+
+// Artículos: el más reciente destacado y los tres siguientes.
+const articles = computed(() => articlesRes.value?.data ?? [])
+const featured = computed(() => articles.value[0])
+const latest = computed(() => articles.value.slice(1, 4))
+
+// Planes: datos y beneficios desde la API y utils/plans (misma fuente que /precios).
+const plans = computed(() => (apiPlans.value?.length ? withFreePlan(apiPlans.value) : []))
+const money = (n: number) => n.toLocaleString('es-CL', { maximumFractionDigits: 2 })
+// La API los llama «Plan mensual» / «Plan Anual»; en la tarjeta aprobada se leen «Pro · Mensual» / «Pro · Anual».
+function planTitle(p: Plan) {
+  const name = p.name.replace(/^plan\s+/i, '')
+  return /pro/i.test(name) ? name : `Pro · ${name.charAt(0).toUpperCase()}${name.slice(1)}`
+}
+function planPer(p: Plan) {
+  if (!p.months || p.months === 1)
+    return '/ mes'
+  return p.months === 12 ? '/ año' : `/ ${p.months} meses`
+}
+function planNote(p: Plan) {
+  return p.months && p.months > 1 && p.monthly_price ? `Equivale a USD ${money(p.monthly_price)} / mes` : 'Se renueva cada mes'
+}
+
+const faqs = [
+  { q: '¿Por qué debo registrarme?', a: 'Con un perfil en la plataforma puedes medir cuánto tiempo dedicas a estudiar y tus avances. Y si tienes cursos Premium podrás verlos por tiempo ilimitado.' },
+  { q: '¿Qué son las oportunidades y los vouchers?', a: 'Las oportunidades te permiten rendir exámenes al terminar un curso: cada examen rendido usa una. El voucher te permite rendir el examen final de una especialidad.' },
+  { q: '¿Cuáles son los métodos de pago?', a: 'El pago es a través de PayPal. Si estás en Chile puedes usar Khipu, Payku o Webpay. Si estás en México y no tienes saldo en PayPal, contáctanos y te contamos las alternativas.' },
+  { q: '¿Habrá más cursos?', a: 'Sí. Estamos preparando nuevos cursos mientras seguimos mejorando la plataforma.' },
+]
+const openFaq = ref(0)
+
+const strip = ['Pentesting', 'Aplicaciones web', 'Análisis de vulnerabilidades', 'Forense', 'Auditorías wireless', 'Seguridad de la información', 'Auditoría de redes', 'Pentesting móvil', 'Programación', 'Administración de servidores']
+const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) min(498px, calc(100vw - 96px)), min(498px, calc((min(100vw, 1200px) - 64px) * 0.4 - 32px))'
 </script>
 
 <template>
-  <div class="bg-bta-dark-blue font-inconsolata text-white">
+  <div>
     <!-- HERO -->
-    <section class="relative flex min-h-[min(820px,92vh)] items-end overflow-hidden md:items-center">
-      <picture>
-        <source media="(min-width: 768px)" srcset="/banner/banner_pink_1920.webp" type="image/webp">
-        <img
-          src="/banner/banner_pink_900.webp"
-          alt=""
-          width="900"
-          height="461"
-          fetchpriority="high"
-          decoding="async"
-          class="absolute inset-0 h-full w-full object-cover object-[78%_center] saturate-[.85] md:object-right"
-        >
-      </picture>
-      <div class="absolute inset-0 bg-bta-dark-blue/80 md:bg-bta-dark-blue/50" />
-      <div class="absolute inset-x-0 bottom-0 h-[200px] bg-gradient-to-b from-bta-dark-blue/0 to-bta-dark-blue" />
-      <div class="container relative w-full pb-[clamp(64px,9vw,120px)] pt-[120px]">
-        <div class="max-w-[720px]">
-          <p :class="eyebrow">
-            Backtrack Academy
-          </p>
-          <h1 class="mt-5 text-balance font-oswald text-[clamp(44px,6.6vw,96px)] font-semibold uppercase leading-[.95] tracking-[-.01em]">
-            Aprende <span class="text-bta-pink">hacking ético</span> y ciberseguridad
-          </h1>
-          <p class="font-plex mt-8 max-w-[520px] text-pretty text-[clamp(17px,1.4vw,20px)] leading-relaxed text-white/75">
-            Especialidades y cursos en español creados por profesionales de la industria. Empieza con cursos gratis y obtén certificado de aprobación.
-          </p>
-          <div class="mt-10 flex flex-wrap gap-3">
-            <a :href="signupUrl()" :class="btnPrimary">
-              Crear mi cuenta <ArrowRight :size="18" />
-            </a>
-            <NuxtLink :to="{ path: '/cursos', query: { gratis: '1' } }" :class="btnOutline">
-              Ver cursos gratis
-            </NuxtLink>
+    <section id="inicio" class="hero">
+      <div class="hero-grid" aria-hidden="true" />
+      <div class="glow-r" aria-hidden="true" />
+      <div class="glow-b" aria-hidden="true" />
+      <div class="wrap rel">
+        <h1 class="h1 bta-l-rise d1">
+          Cursos de Hacking Ético y <em>Ciberseguridad Online</em>
+        </h1>
+        <p class="lead bta-l-rise d2">
+          Aprende con cursos prácticos creados por profesionales de la industria. Comienza gratis y avanza a tu ritmo.
+        </p>
+        <div class="hero-cta bta-l-rise d3">
+          <a :href="signupUrl()" class="btn btn-p">Crear cuenta gratis <span class="arr" aria-hidden="true">→</span></a>
+          <NuxtLink to="/cursos" class="btn btn-o">
+            Explorar cursos
+          </NuxtLink>
+        </div>
+        <p v-if="freeCourses.length" class="hero-sub bta-l-rise d3">
+          ¿Recién empiezas? <a href="#cursos" @click="tab = 'gratis'">Mira los cursos gratuitos →</a>
+        </p>
+        <div v-if="stats.length" class="stats bta-l-rise d4">
+          <div v-for="s in stats" :key="s.label" class="stat">
+            <b>{{ s.n }}</b><span>{{ s.label }}</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ESPECIALIDADES -->
-    <section v-if="specialtyList.length" id="especialidades" class="relative isolate border-t border-white/5">
+    <div class="strip" aria-label="Temas que puedes estudiar">
+      <div class="strip-label">
+        Temas que puedes estudiar
+      </div>
+      <div class="track" aria-hidden="true">
+        <span v-for="(t, i) in [...strip, ...strip]" :key="i"><i>./</i>{{ t }}</span>
+      </div>
+    </div>
+
+    <!-- POR QUÉ -->
+    <section id="por-que" class="sec isolate">
       <CyberBackground variant="recon" intensity="subtle" glow="left" />
-      <div class="container grid items-start gap-x-20 gap-y-10 py-[clamp(80px,10vw,144px)] lg:grid-cols-3">
-        <div class="lg:sticky lg:top-28">
-          <div :class="eyebrow">
-            Especialidades
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <div class="eyebrow">
+              Por qué Backtrack Academy
+            </div>
+            <h2 class="h2">
+              Una plataforma hecha solo para ciberseguridad
+            </h2>
+            <p class="lead">
+              Todo el contenido está enfocado en seguridad informática y hacking ético. Sin relleno: lo que necesitas para formarte en serio.
+            </p>
           </div>
-          <h2 :class="h2">
-            Rutas completas para tu carrera
-          </h2>
-          <p class="font-plex mt-5 max-w-[400px] text-pretty leading-relaxed text-white/75">
-            Cada especialidad reúne los cursos necesarios, en orden, para dominar un área de la ciberseguridad.
-          </p>
-          <NuxtLink to="/especialidades" class="mt-8" :class="[sectionLink]">
-            Ver todas las especialidades <ArrowRight :size="16" />
-          </NuxtLink>
         </div>
-        <div class="border-t border-gray-border lg:col-span-2">
-          <CatalogSpecialtyRow v-for="s in specialtyList" :key="s.slug" :specialty="s" />
+        <div class="vgrid">
+          <div class="vcard">
+            <div class="vico">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z" /><path d="M9 12l2 2 4-4" /></svg>
+            </div>
+            <h3>Contenido especializado</h3>
+            <p>Cursos y artículos centrados únicamente en seguridad informática, pentesting y hacking ético.</p>
+          </div>
+          <div class="vcard">
+            <div class="vico">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17l6-6-6-6" /><path d="M12 19h8" /></svg>
+            </div>
+            <h3>Aprendizaje práctico</h3>
+            <p>Aprendes haciendo, con ejemplos prácticos, y rindes un examen al terminar cada curso.</p>
+          </div>
+          <div class="vcard">
+            <div class="vico">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20a6.5 6.5 0 0 1 13 0" /><path d="M16 4.5a3.5 3.5 0 0 1 0 7" /><path d="M18.5 14.5a6.5 6.5 0 0 1 3 5.5" /></svg>
+            </div>
+            <h3>Profesionales de la industria</h3>
+            <p>Aprende de instructores que trabajan en ciberseguridad y comparten su experiencia real.</p>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- CURSOS DESTACADOS -->
-    <section v-if="courses.length" id="cursos" class="relative isolate border-t border-white/5">
-      <!-- Sin terminal ni glow: las portadas de los cursos son el protagonista de esta sección -->
+    <section v-if="shown" id="cursos" class="sec isolate">
       <CyberBackground variant="grid" intensity="faint" glow="none" />
-      <div class="container py-[clamp(80px,10vw,144px)]">
-        <div class="mb-10 flex flex-wrap items-end justify-between gap-6">
+      <div class="wrap rel">
+        <div class="sec-head">
           <div>
-            <div :class="eyebrow">
+            <div class="eyebrow">
               Cursos
             </div>
-            <h2 :class="h2">
-              Cursos más populares
+            <h2 class="h2">
+              Cursos destacados
             </h2>
+            <p class="lead">
+              Practica con laboratorios reales y aprende las técnicas que usan los profesionales: desde tu primera vulnerabilidad hasta ataques avanzados.
+            </p>
           </div>
-          <NuxtLink to="/cursos" :class="sectionLink">
-            Ver todos los cursos <ArrowRight :size="16" />
+          <NuxtLink to="/cursos" class="btn btn-o">
+            Ver los {{ coursesTotal }} cursos <span class="arr" aria-hidden="true">→</span>
           </NuxtLink>
         </div>
-        <div class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,340px),1fr))] gap-x-5 gap-y-6">
-          <CatalogCourseCard v-for="c in courses" :key="c.slug" :course="c" />
+        <div class="tabs" role="tablist" aria-label="Filtrar cursos">
+          <button
+            v-for="t in tabs"
+            :key="t.id"
+            type="button"
+            role="tab"
+            class="tab"
+            :class="{ on: shown.id === t.id }"
+            :aria-selected="shown.id === t.id"
+            @click="tab = t.id"
+          >
+            {{ t.label }}
+          </button>
+        </div>
+        <div class="cgrid" :class="{ two: shown.id === 'nuevos' }">
+          <CatalogCourseCard v-for="c in shown.list" :key="c.slug" :course="c" />
         </div>
       </div>
     </section>
 
     <!-- ARTÍCULOS -->
-    <section v-if="latestArticles.length" id="articulos" class="relative isolate border-t border-white/5">
+    <section v-if="featured" id="articulos" class="sec sec-articulos isolate">
       <CyberBackground variant="http" intensity="subtle" glow="left" />
-      <div class="container py-[clamp(80px,10vw,144px)]">
-        <div class="mb-10 flex flex-wrap items-end justify-between gap-6">
+      <div class="wrap">
+        <div class="sec-head">
           <div>
-            <div :class="eyebrow">
-              Conocimiento
+            <div class="eyebrow">
+              Artículos
             </div>
-            <h2 :class="h2">
-              Artículos técnicos
+            <h2 class="h2">
+              Lo último de nuestra biblioteca
             </h2>
+            <p class="lead">
+              Guías y casos prácticos escritos por la comunidad.
+            </p>
           </div>
-          <NuxtLink to="/articulos" :class="sectionLink">
-            Ver todos los artículos <ArrowRight :size="16" />
+          <NuxtLink to="/articulos" class="btn btn-o">
+            Ver todos los artículos <span class="arr" aria-hidden="true">→</span>
           </NuxtLink>
         </div>
-        <div class="grid gap-x-8 gap-y-10 md:grid-cols-3">
-          <CatalogArticleCard v-for="a in latestArticles" :key="a.slug" :article="a" />
+        <div class="agrid">
+          <NuxtLink :to="`/articulo/${featured.slug}`" class="feat">
+            <div class="cover">
+              <img v-if="featured.image_url" :src="featured.image_url" alt="" loading="lazy" decoding="async">
+              <span v-if="featured.category" class="chip-tl tag tag-cat tag-solid">{{ featured.category.name }}</span>
+            </div>
+            <div class="feat-b">
+              <div class="eyebrow eyebrow-meta">
+                Más reciente · {{ formatDate(featured.published_at) }}
+              </div>
+              <h3 class="feat-t">
+                {{ featured.title }}
+              </h3>
+              <p v-if="featured.summary" class="feat-s">
+                {{ featured.summary }}
+              </p>
+              <div class="feat-foot">
+                <span class="link">Leer artículo <span aria-hidden="true">→</span></span>
+              </div>
+            </div>
+          </NuxtLink>
+          <div>
+            <div class="alist">
+              <NuxtLink v-for="a in latest" :key="a.slug" :to="`/articulo/${a.slug}`" class="aitem">
+                <div class="cover">
+                  <img v-if="a.image_thumb_url || a.image_url" :src="(a.image_thumb_url || a.image_url)!" alt="" loading="lazy" decoding="async">
+                </div>
+                <div>
+                  <span v-if="a.category" class="tag tag-cat">{{ a.category.name }}</span>
+                  <h3 class="ai-t">
+                    {{ a.title }}
+                  </h3>
+                  <div class="ai-m">
+                    {{ formatDate(a.published_at) }}
+                  </div>
+                </div>
+              </NuxtLink>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- OPINIONES -->
-    <section v-if="opinions?.length" id="opiniones" class="relative isolate border-t border-white/5">
-      <CyberBackground variant="topology" intensity="faint" glow="right" flip />
-      <div class="container py-[clamp(80px,10vw,144px)]">
-        <div class="mb-12">
-          <div :class="eyebrow">
-            Opiniones
-          </div>
-          <h2 :class="h2">
-            Lo que dicen nuestros estudiantes
-          </h2>
-        </div>
-        <div class="grid gap-5 md:grid-cols-3">
-          <figure v-for="r in opinions" :key="r.id" class="flex flex-col gap-6 rounded-lg border border-gray-border bg-bta-section p-7">
-            <div class="flex gap-1" role="img" :aria-label="`${r.evaluation} de 5 estrellas`">
-              <Star v-for="i in 5" :key="i" :size="16" :class="i <= r.evaluation ? 'text-bta-pink' : 'text-white/25'" />
+    <!-- PLANES -->
+    <section v-if="plans.length" id="planes" class="sec isolate">
+      <CyberBackground variant="grid" intensity="faint" glow="none" />
+      <div class="glow-r glow-planes" aria-hidden="true" />
+      <div class="wrap rel">
+        <div class="sec-head">
+          <div>
+            <div class="eyebrow">
+              Planes
             </div>
-            <blockquote class="font-plex flex-1 text-pretty leading-relaxed text-white/75">
+            <h2 class="h2">
+              Empieza gratis. Avanza más rápido con <span class="pink">Pro</span>
+            </h2>
+            <p class="lead">
+              Comienza gratis con nuestros cursos de iniciación o accede al catálogo completo con nuestros planes de pago.
+            </p>
+          </div>
+          <NuxtLink to="/precios" class="btn btn-o">
+            Comparar planes <span class="arr" aria-hidden="true">→</span>
+          </NuxtLink>
+        </div>
+        <div class="pgrid">
+          <div v-for="p in plans" :key="p.id" class="plan" :class="{ pro: p.recommended }">
+            <div class="plan-k">
+              <span>{{ p.free ? 'Free' : planTitle(p) }}</span>
+              <span v-if="p.recommended" class="tag tag-rec">Recomendado</span>
+            </div>
+            <div>
+              <div class="price">
+                <b class="amt">{{ p.free ? '$0' : `USD ${money(p.price)}` }}</b><span v-if="!p.free" class="per">{{ planPer(p) }}</span>
+              </div>
+              <div class="price-note">
+                {{ p.free ? 'Crea tu cuenta y empieza hoy' : planNote(p) }}
+              </div>
+            </div>
+            <ul class="feats">
+              <li v-for="[label, ok] in planFeatures(p)" :key="label" :class="{ off: !ok }">
+                <svg v-if="ok" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ec1075" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg>
+                <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12" /></svg>
+                {{ label }}
+              </li>
+            </ul>
+            <a :href="signupUrl(planCtaPath(p))" class="btn plan-btn" :class="p.recommended ? 'btn-p' : 'btn-o'">
+              <template v-if="p.free">Crear cuenta gratis</template>
+              <template v-else>Elegir plan <span class="arr" aria-hidden="true">→</span></template>
+            </a>
+          </div>
+        </div>
+        <p class="note">
+          Importante: si tu pago recurrente está activado, las suscripciones no tienen derecho a reembolso. Cualquier duda, escríbenos a <a href="mailto:contacto@backtrackacademy.com">contacto@backtrackacademy.com</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- OPINIONES -->
+    <section v-if="opinions?.length" id="opiniones" class="sec isolate">
+      <CyberBackground variant="grid" intensity="faint" glow="none" />
+      <div class="wrap rel">
+        <div class="sec-head">
+          <div>
+            <div class="eyebrow">
+              Opiniones
+            </div>
+            <h2 class="h2">
+              Lo que dicen nuestros estudiantes
+            </h2>
+          </div>
+        </div>
+        <div class="ogrid">
+          <figure v-for="r in opinions" :key="r.id" class="op">
+            <div class="op-stars" role="img" :aria-label="`${r.evaluation} de 5 estrellas`">
+              <svg v-for="i in 5" :key="i" :class="{ off: i > r.evaluation }" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+            </div>
+            <blockquote class="op-q">
               “{{ r.opinion }}”
             </blockquote>
-            <figcaption class="flex flex-col gap-1 border-t border-white/5 pt-5">
-              <span class="text-[15px] font-semibold">{{ r.user.name }}</span>
-              <NuxtLink :to="`/curso/${r.course.slug}`" class="text-[13px] text-white/55 hover:text-bta-pink">
+            <figcaption class="op-by">
+              <span class="op-name">{{ r.user.name }}</span>
+              <NuxtLink :to="`/curso/${r.course.slug}`" class="op-course">
                 {{ r.course.titulo }}
               </NuxtLink>
             </figcaption>
@@ -203,73 +356,73 @@ const sectionLink = 'flex items-center gap-1.5 text-[15px] font-medium text-whit
       </div>
     </section>
 
-    <!-- PLANES -->
-    <section v-if="plans.length" id="planes" class="relative isolate border-t border-white/5">
-      <CyberBackground variant="grid" intensity="faint" glow="none" />
-      <div class="container py-[clamp(80px,10vw,144px)]">
-        <div class="mb-12 flex flex-wrap items-end justify-between gap-6">
-          <div>
-            <div :class="eyebrow">
-              Planes Pro
-            </div>
-            <h2 :class="h2">
-              Conviértete en un <span class="text-bta-pink">hacker profesional</span>
-            </h2>
+    <!-- PREGUNTAS FRECUENTES -->
+    <section id="faq" class="sec isolate">
+      <CyberBackground variant="topology" intensity="faint" glow="right" flip />
+      <div class="wrap fgrid">
+        <div>
+          <div class="eyebrow">
+            Preguntas frecuentes
           </div>
-          <NuxtLink to="/precios" :class="sectionLink">
-            Comparar planes <ArrowRight :size="16" />
-          </NuxtLink>
+          <h2 class="h2">
+            Lo que necesitas saber antes de empezar
+          </h2>
+          <p class="lead">
+            ¿Otra duda? Escríbenos a <a href="mailto:contacto@backtrackacademy.com" class="pink">contacto@backtrackacademy.com</a>
+          </p>
         </div>
-        <div class="grid gap-5 md:grid-cols-3">
-          <div v-for="p in plans" :key="p.id" class="flex flex-col gap-3">
-            <button
-              type="button"
-              class="flex flex-1 flex-col gap-6 rounded-lg border bg-bta-section p-6 text-left transition-colors duration-200"
-              :class="activePlan === p.id ? 'border-bta-pink' : 'border-gray-border hover:border-white/30'"
-              :aria-pressed="activePlan === p.id"
-              @click="selectedPlan = p.id"
-            >
-              <div class="flex items-center justify-between gap-2">
-                <span class="font-oswald text-xl font-medium uppercase tracking-[.02em]">{{ p.name }}</span>
-                <span v-if="p.recommended" class="rounded bg-bta-pink/15 px-2 py-0.5 text-xs font-medium text-bta-pink">Recomendado</span>
-              </div>
-              <div>
-                <div class="flex items-baseline gap-1.5">
-                  <span class="text-4xl font-semibold">{{ p.free ? 'Gratis' : `USD ${p.price}` }}</span>
-                </div>
-                <div class="mt-1.5 flex gap-2 text-[13px] text-white/55">
-                  <span v-if="p.monthly_price">USD {{ p.monthly_price }} / mes</span><span v-if="p.price < p.old_price" class="text-emerald-400">Ahorra {{ p.discount_percent }}%</span>
-                </div>
-              </div>
-              <ul class="flex flex-col gap-2.5 border-t border-white/5 pt-5 text-sm">
-                <li v-for="[label, ok] in planFeatures(p)" :key="label" class="flex items-center gap-2.5" :class="ok ? 'text-white' : 'text-white/40'">
-                  <Check v-if="ok" :size="16" class="text-bta-pink" />
-                  <Minus v-else :size="16" />
-                  {{ label }}
-                </li>
-              </ul>
+        <div class="faq">
+          <div v-for="(f, i) in faqs" :key="f.q" class="faq-i">
+            <button type="button" class="faq-q" :aria-expanded="openFaq === i" @click="openFaq = openFaq === i ? -1 : i">
+              {{ f.q }}
+              <svg class="chev" :class="{ open: openFaq === i }" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
             </button>
-            <a :href="ctaUrl(p)" :class="activePlan === p.id ? btnPrimary : btnOutline">
-              {{ p.free ? 'Crear cuenta gratis' : 'Elegir plan' }}
-            </a>
+            <p v-if="openFaq === i" class="faq-a">
+              {{ f.a }}
+            </p>
           </div>
         </div>
-        <p class="mt-6 max-w-[820px] text-[13px] leading-relaxed text-white/55">
-          Importante: si tu pago recurrente está activado, las suscripciones no tienen derecho a reembolso. Cualquier duda, contáctanos a <a href="mailto:contacto@backtrackacademy.com" class="text-bta-pink hover:underline">contacto@backtrackacademy.com</a>.
-        </p>
       </div>
     </section>
 
-    <!-- CTA FINAL -->
-    <section class="relative isolate border-t border-white/5">
+    <!-- CTA FINAL CON CHARLIE -->
+    <section id="registro" class="sec sec-cta isolate">
       <CyberBackground variant="prompt" intensity="normal" glow="center" mask="soft" />
-      <div class="container flex flex-wrap items-end justify-between gap-10 py-[clamp(96px,12vw,176px)]">
-        <h2 class="max-w-[820px] text-balance font-oswald text-[clamp(40px,5.6vw,84px)] font-semibold uppercase leading-[.98]">
-          Empieza hoy tu camino en <span class="text-bta-pink">ciberseguridad</span>
-        </h2>
-        <a :href="signupUrl()" :class="btnPrimary">
-          Empezar ahora <ArrowRight :size="18" />
-        </a>
+      <div class="wrap">
+        <div class="cta">
+          <div class="cta-bg" aria-hidden="true" />
+          <div class="cta-txt">
+            <div class="eyebrow">
+              Tu siguiente paso
+            </div>
+            <h2 class="cta-t">
+              Empieza hoy tu camino en <em>ciberseguridad</em>
+            </h2>
+            <p class="lead cta-lead">
+              Crea tu cuenta gratis y comienza con los cursos de iniciación.
+            </p>
+            <div class="cta-btns">
+              <a :href="signupUrl()" class="btn btn-p">Crear mi cuenta <span class="arr" aria-hidden="true">→</span></a>
+              <NuxtLink to="/cursos" class="btn btn-o">
+                Explorar cursos
+              </NuxtLink>
+            </div>
+          </div>
+          <figure class="charlie">
+            <div class="charlie-frame">
+            <img
+              src="/landing/charlie-1000.webp"
+              srcset="/landing/charlie-760.webp 760w, /landing/charlie-1000.webp 1000w, /landing/charlie-1513.webp 1513w"
+              :sizes="charlieSizes"
+              alt="Charlie, la mascota de Backtrack Academy, con audífonos y lentes, trabajando en su laptop junto a una taza BTA_"
+              width="498"
+              height="342"
+              loading="lazy"
+              decoding="async"
+            >
+            </div>
+          </figure>
+        </div>
       </div>
     </section>
   </div>

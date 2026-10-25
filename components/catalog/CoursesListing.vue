@@ -124,7 +124,7 @@ const isActive = (type: 'tema' | 'especialidad' | 'nivel', slug: string) => prop
             </div>
           </div>
 
-          <div v-if="l.courses.length" class="mt-6 grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-x-5 gap-y-6 transition-opacity" :class="l.status === 'pending' ? 'opacity-50' : ''">
+          <div v-if="l.courses.length" class="mt-6 grid grid-cols-[repeat(auto-fill,minmax(min(100%,255px),1fr))] gap-x-5 gap-y-6 transition-opacity" :class="l.status === 'pending' ? 'opacity-50' : ''">
             <CatalogCourseCard v-for="c in l.courses" :key="c.slug" :course="c" />
           </div>
           <div v-else class="mt-10 rounded-lg border border-gray-border bg-bta-section p-10 text-center">

@@ -50,7 +50,7 @@ export const CYBER_FRAGMENTS: Record<CyberVariant, CyberFragment[]> = {
   ],
   // CTA final: terminal esperando comando
   prompt: [
-    { depth: 1, big: true, pos: { bottom: '12%', left: '3%' }, delay: 0.4, mobile: true, cursor: true, lines: ['root@backtrack:~$ '] },
+    { depth: 1, big: true, pos: { bottom: '12%', left: '3%' }, delay: 0.4, mobile: true, cursor: true, lines: ['root@backtrackacademy:~$ '] },
     { depth: 3, pos: { top: '10%', right: '-3%' }, delay: 1.4, lines: ['[*] Session ready', '[+] Authentication endpoint found', '[+] Welcome back, root'] },
   ],
   // Topología y solo-grid no llevan fragmentos de texto

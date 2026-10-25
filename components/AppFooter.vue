@@ -4,10 +4,9 @@ import Mail from './icons/Mail.vue'
 
 const explore = [
   { name: 'Cursos', to: '/cursos' },
-  { name: 'Especialidades', to: '/especialidades' },
   { name: 'Artículos', to: '/articulos' },
   { name: 'Debates', to: '/debates' },
-  { name: 'Precios', to: '/precios' },
+  { name: 'Planes', to: '/precios' },
 ]
 const academy = [
   { name: 'Nosotros', to: '/team' },
@@ -24,7 +23,7 @@ const groups = [
   { title: 'Academia', links: academy },
   { title: 'Legal', links: legal },
 ]
-const mails = ['contacto@backtrackacademy.com', 'ventas@backtrackacademy.com']
+const mails = ['contacto@backtrackacademy.com']
 const socials = [
   { icon: 'lucide:facebook', href: 'https://www.facebook.com/BackTrackAcademy/', label: 'Facebook' },
   { icon: 'lucide:instagram', href: 'https://www.instagram.com/backtrackacademy/', label: 'Instagram' },
@@ -44,7 +43,7 @@ const year = new Date().getFullYear()
           <i class="size-2.5 rounded-full bg-white/15" />
           <i class="size-2.5 rounded-full bg-bta-pink/70" />
         </span>
-        <span><span class="text-bta-pink">root@backtrack</span>:~$ ls -la /backtrack</span>
+        <span><span class="text-bta-pink">root@backtrackacademy</span>:~$ ls -la /backtrackacademy</span>
         <span class="h-px flex-1 bg-gradient-to-r from-white/15 to-transparent" aria-hidden="true" />
       </div>
 
@@ -83,7 +82,7 @@ const year = new Date().getFullYear()
 
       <div class="mt-14 flex flex-col gap-6 border-t border-white/10 pt-6 text-[13px] text-white/45 md:flex-row md:items-center md:justify-between">
         <p class="leading-relaxed">
-          <span class="text-bta-pink">$</span> © {{ year }} Backtrack Academy · Av. Lib. O’Higgins #1302 70, Santiago, Chile · Todos los Derechos Reservados.<span class="foot__cursor" aria-hidden="true">█</span>
+          <span class="text-bta-pink">$</span> © {{ year }} Backtrack Academy · Todos los derechos reservados.<span class="foot__cursor" aria-hidden="true">█</span>
         </p>
         <div class="flex items-center gap-5">
           <span class="font-oswald uppercase tracking-wide text-white/60">Síguenos</span>

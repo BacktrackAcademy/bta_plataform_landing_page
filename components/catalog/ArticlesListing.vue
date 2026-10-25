@@ -40,12 +40,13 @@ const rest = computed(() => (featured.value ? props.l.articles.slice(1) : props.
     <CyberBackground variant="http" intensity="faint" glow="right" />
     <div class="container pb-[clamp(72px,9vw,128px)] pt-10">
       <CatalogBreadcrumbs :items="crumbs" />
-      <header class="mt-10 max-w-[760px]">
+      <!-- Ancho y interlineado aprobados: el título general cabe en dos líneas en desktop y las tildes no se montan. -->
+      <header class="mt-10 max-w-[1120px]">
         <p class="font-oswald text-xs font-medium uppercase tracking-[.12em] text-bta-pink">
           Artículos
         </p>
-        <h1 class="mt-4 text-balance font-oswald text-[clamp(38px,5.4vw,76px)] font-semibold uppercase leading-[.98]">
-          {{ l.facet ? l.heading : 'Conocimiento técnico para profesionales' }}
+        <h1 class="mt-4 text-balance font-oswald text-[clamp(38px,5.4vw,76px)] font-semibold uppercase leading-[1.14] sm:leading-[1.12]">
+          {{ l.facet ? l.heading : 'Artículos de ciberseguridad y hacking ético' }}
         </h1>
         <p class="mt-6 max-w-[600px] text-pretty font-plex text-lg leading-relaxed text-white/75">
           {{ l.intro }}
