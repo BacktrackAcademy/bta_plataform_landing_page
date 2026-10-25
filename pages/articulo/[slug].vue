@@ -107,29 +107,31 @@ const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
 <template>
   <div class="ar relative isolate bg-bta-dark-blue font-inconsolata text-white">
     <div class="ar-progress" :style="{ width: `${progress}%` }" aria-hidden="true" />
+    <CyberBackground variant="scan" intensity="faint" glow="right" />
     <article>
-      <!-- Estructura editorial aprobada (inspirada en Senna): breadcrumb → portada → título → información → contenido original -->
-      <div class="ar-col pt-10 max-sm:pt-6">
-        <CatalogBreadcrumbs
-          :items="[
-            { name: 'Inicio', to: '/' },
-            { name: 'Artículos', to: '/articulos' },
-            ...(a.category ? [{ name: a.category.name, to: `/articulos/categoria/${a.category.slug}` }] : []),
-            { name: a.title },
-          ]"
-        />
-      </div>
-      <div v-if="a.image_url" class="ar-wide">
-        <figure class="ar-cover">
-          <img :src="a.image_url" :alt="a.title" width="1280" height="720" fetchpriority="high" decoding="async">
-        </figure>
-      </div>
-
-      <header class="ar-col ar-head">
-        <h1 class="ar-title text-balance font-oswald text-[clamp(32px,4.6vw,60px)] font-semibold">
-          {{ a.title }}
-        </h1>
-        <div class="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm text-white/60">
+      <!-- Hero con la misma línea que el detalle de curso: fondo cyber, portada atenuada, eyebrow, título en mayúsculas e información -->
+      <section class="relative overflow-hidden border-b border-white/5">
+        <img v-if="a.image_url" :src="a.image_url" alt="" width="1280" height="720" fetchpriority="high" decoding="async" class="absolute inset-0 h-full w-full object-cover opacity-20">
+        <div class="absolute inset-0 bg-gradient-to-b from-bta-dark-blue/40 to-bta-dark-blue" />
+        <div class="container relative pb-[clamp(48px,6vw,88px)] pt-10">
+          <CatalogBreadcrumbs
+            :items="[
+              { name: 'Inicio', to: '/' },
+              { name: 'Artículos', to: '/articulos' },
+              ...(a.category ? [{ name: a.category.name, to: `/articulos/categoria/${a.category.slug}` }] : []),
+              { name: a.title },
+            ]"
+          />
+          <header class="mt-12 max-w-[980px]">
+            <p class="font-oswald text-xs font-medium uppercase tracking-[.12em] text-bta-pink">
+              Artículo<template v-if="a.category">
+                · {{ a.category.name }}
+              </template>
+            </p>
+            <h1 class="ar-title mt-4 text-balance font-oswald text-[clamp(34px,5vw,64px)] font-semibold uppercase">
+              {{ a.title }}
+            </h1>
+            <div class="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm text-white/60">
           <NuxtLink v-if="a.author" :to="`/autor/${a.author.username}`" class="group flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bta-pink">
             <span class="grid size-9 shrink-0 place-items-center overflow-hidden rounded-full border border-gray-border bg-bta-section text-xs text-white/50">
               <img v-if="a.author.avatar_url" :src="a.author.avatar_url" :alt="a.author.name" width="36" height="36" class="size-full object-cover">
@@ -138,12 +140,11 @@ const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
             <span class="font-medium text-white group-hover:text-bta-pink">{{ a.author.name }}</span>
           </NuxtLink>
           <time :datetime="a.published_at">{{ formatDate(a.published_at) }}</time>
-          <NuxtLink v-if="a.category" :to="`/articulos/categoria/${a.category.slug}`" class="font-oswald text-xs font-medium uppercase tracking-[.12em] text-bta-pink hover:underline">
-            {{ a.category.name }}
-          </NuxtLink>
           <span v-if="a.reading_time_minutes" class="flex items-center gap-1.5"><Clock :size="14" /> {{ a.reading_time_minutes }} min de lectura</span>
         </div>
-      </header>
+          </header>
+        </div>
+      </section>
 
       <!-- Cuerpo: el campo Descripción no se muestra; el contenido empieza directo después de la información. -->
       <div ref="bodyEl" class="ar-col ar-body">
@@ -289,13 +290,10 @@ const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
 
 <style scoped>
 /* Columna editorial aprobada: 960 px para breadcrumb, título, información y cuerpo; la portada usa 1116 px. */
-.ar-col { max-width: 960px; margin-left: auto; margin-right: auto; padding-left: 32px; padding-right: 32px; box-sizing: content-box; }
+.ar-col { max-width: 1136px; margin-left: auto; margin-right: auto; padding-left: 32px; padding-right: 32px; box-sizing: content-box; }
 .ar-wide { max-width: 1116px; margin-left: auto; margin-right: auto; padding-left: 32px; padding-right: 32px; box-sizing: content-box; }
-.ar-cover { margin: 32px 0 0; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255, 255, 255, .05); background: rgba(255, 255, 255, .05); }
-.ar-cover img { display: block; width: 100%; height: auto; object-fit: contain; }
-.ar-head { margin-top: 48px; }
 /* Interlineado local del H1 para que las tildes no se monten. */
-.ar-title { line-height: 1.12; margin: 0; hyphens: manual; overflow-wrap: normal; }
+.ar-title { line-height: 1.05; hyphens: manual; overflow-wrap: normal; }
 .ar-body { margin-top: 48px; overflow-wrap: break-word; }
 .ar-body :deep(.prose > :first-child) { margin-top: 0; }
 .ar-body :deep(a) { overflow-wrap: anywhere; }
@@ -331,8 +329,6 @@ const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
 @media (min-width: 1280px) { .ar-sheet, .ar-scrim { display: none; } }
 @media (max-width: 640px) {
   .ar-col, .ar-wide { padding-left: 16px; padding-right: 16px; }
-  .ar-cover { margin-top: 20px; }
-  .ar-head { margin-top: 32px; }
   .ar-body { margin-top: 36px; }
   .ar-body :deep(pre) { padding: .9em 1.1em; }
 }

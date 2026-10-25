@@ -12,8 +12,13 @@ module.exports = {
     container: {
       center: true,
       padding: '2rem',
+      // Mismo ancho y márgenes que el header y la landing (1200 px, 32 px): el contenido arranca en el borde del logo.
       screens: {
-        '2xl': '1400px',
+        'sm': '640px',
+        'md': '768px',
+        'lg': '1024px',
+        'xl': '1200px',
+        '2xl': '1200px',
       },
     },
     extend: {

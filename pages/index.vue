@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Paginated, PublicArticleCard, PublicCourseCard, PublicFilters } from '~/interfaces/public'
+import type { Paginated, PublicArticleCard, PublicCourseCard } from '~/interfaces/public'
 
 // Landing aprobada (lienzo «BTA Landing»): estructura, textos y estilos del prototipo con datos reales de la API.
 definePageMeta({ layout: 'landing' })
@@ -15,8 +15,16 @@ const { signupUrl } = useAppLinks()
 // Cada sección se oculta si su dato no llegó: una caída parcial de la API no rompe la home.
 const { data: coursesRes } = usePublicApi<Paginated<PublicCourseCard>>('/courses', { query: { per_page: 100 } })
 const { data: articlesRes } = usePublicApi<Paginated<PublicArticleCard>>('/articles', { query: { per_page: 4 } })
-const { data: filters } = usePublicApi<PublicFilters>('/filters')
 const { data: apiPlans } = useAPI<Plan[]>('/landing/plans')
+
+interface Opinion {
+  id: number
+  opinion: string
+  evaluation: number
+  user: { name: string, username: string }
+  course: { titulo: string, slug: string }
+}
+const { data: opinions } = useAPI<Opinion[]>('/landing/opinions?limit=3')
 
 const allCourses = computed(() => coursesRes.value?.data ?? [])
 const coursesTotal = computed(() => coursesRes.value?.pagination.total_entries ?? allCourses.value.length)
@@ -41,11 +49,10 @@ const tabs = computed(() => ([
 ] as { id: Tab, label: string, list: PublicCourseCard[] }[]).filter(t => t.list.length))
 const shown = computed(() => tabs.value.find(t => t.id === tab.value) ?? tabs.value[0])
 
-// Artículos: el más reciente destacado y los tres siguientes; temáticas = categorías con más artículos.
+// Artículos: el más reciente destacado y los tres siguientes.
 const articles = computed(() => articlesRes.value?.data ?? [])
 const featured = computed(() => articles.value[0])
 const latest = computed(() => articles.value.slice(1, 4))
-const topics = computed(() => [...(filters.value?.article_categories ?? [])].sort((a, b) => b.articles_count - a.articles_count).slice(0, 4))
 
 // Planes: datos y beneficios desde la API y utils/plans (misma fuente que /precios).
 const plans = computed(() => (apiPlans.value?.length ? withFreePlan(apiPlans.value) : []))
@@ -209,10 +216,10 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
               Artículos
             </div>
             <h2 class="h2">
-              Lo último de nuestra biblioteca técnica
+              Lo último de nuestra biblioteca
             </h2>
             <p class="lead">
-              Guías, análisis y casos prácticos escritos por la comunidad de Backtrack Academy. Conocimiento abierto, sin necesidad de cuenta.
+              Guías y casos prácticos escritos por la comunidad.
             </p>
           </div>
           <NuxtLink to="/articulos" class="btn btn-o">
@@ -236,7 +243,6 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
                 {{ featured.summary }}
               </p>
               <div class="feat-foot">
-                <span v-if="featured.author" class="by"><b>by:</b> {{ featured.author.name }}</span>
                 <span class="link">Leer artículo <span aria-hidden="true">→</span></span>
               </div>
             </div>
@@ -253,16 +259,9 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
                     {{ a.title }}
                   </h3>
                   <div class="ai-m">
-                    {{ formatDate(a.published_at) }}<template v-if="a.author">
-                      · <span class="ai-au">{{ a.author.name }}</span>
-                    </template>
+                    {{ formatDate(a.published_at) }}
                   </div>
                 </div>
-              </NuxtLink>
-            </div>
-            <div v-if="topics.length" class="atopics" aria-label="Explorar por temática">
-              <NuxtLink v-for="t in topics" :key="t.slug" :to="`/articulos/categoria/${t.slug}`">
-                {{ t.name }}
               </NuxtLink>
             </div>
           </div>
@@ -324,6 +323,39 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
       </div>
     </section>
 
+    <!-- OPINIONES -->
+    <section v-if="opinions?.length" id="opiniones" class="sec isolate">
+      <CyberBackground variant="grid" intensity="faint" glow="none" />
+      <div class="wrap rel">
+        <div class="sec-head">
+          <div>
+            <div class="eyebrow">
+              Opiniones
+            </div>
+            <h2 class="h2">
+              Lo que dicen nuestros estudiantes
+            </h2>
+          </div>
+        </div>
+        <div class="ogrid">
+          <figure v-for="r in opinions" :key="r.id" class="op">
+            <div class="op-stars" role="img" :aria-label="`${r.evaluation} de 5 estrellas`">
+              <svg v-for="i in 5" :key="i" :class="{ off: i > r.evaluation }" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+            </div>
+            <blockquote class="op-q">
+              “{{ r.opinion }}”
+            </blockquote>
+            <figcaption class="op-by">
+              <span class="op-name">{{ r.user.name }}</span>
+              <NuxtLink :to="`/curso/${r.course.slug}`" class="op-course">
+                {{ r.course.titulo }}
+              </NuxtLink>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
     <!-- PREGUNTAS FRECUENTES -->
     <section id="faq" class="sec isolate">
       <CyberBackground variant="topology" intensity="faint" glow="right" flip />
@@ -377,6 +409,7 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
             </div>
           </div>
           <figure class="charlie">
+            <div class="charlie-frame">
             <img
               src="/landing/charlie-1000.webp"
               srcset="/landing/charlie-760.webp 760w, /landing/charlie-1000.webp 1000w, /landing/charlie-1513.webp 1513w"
@@ -387,6 +420,7 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
               loading="lazy"
               decoding="async"
             >
+            </div>
           </figure>
         </div>
       </div>
