@@ -36,18 +36,44 @@ const stats = computed(() => [
   { n: articlesTotal.value, label: 'artículos técnicos' },
 ].filter(s => s.n > 0))
 
-// Cursos destacados. «Nuevos lanzamientos» solo muestra cursos marcados como próximos lanzamientos (`coming_soon`);
-// si la API no entrega ninguno, la pestaña se oculta (sin reemplazarla por cursos antiguos) y la sección parte en «Más populares».
-type Tab = 'nuevos' | 'populares' | 'gratis'
-const tab = ref<Tab>('nuevos')
-const launches = computed(() => allCourses.value.filter(c => c.coming_soon).slice(0, 2))
+// Cursos destacados, todo a la vista (sin pestañas): el próximo lanzamiento (`coming_soon`) como anuncio y debajo
+// «Más populares» y «Gratis». Cada bloque se oculta si no tiene cursos; los lanzamientos no se mezclan con los demás.
+// El próximo lanzamiento es el de fecha futura más cercana; los sin fecha o con fecha vencida van al final.
+const launchRank = (c: PublicCourseCard) => {
+  const t = c.timer ? Date.parse(c.timer) : Number.NaN
+  return Number.isNaN(t) || t <= Date.now() ? Infinity : t
+}
+const launch = computed(() => allCourses.value
+  .filter(c => c.coming_soon)
+  .sort((a, b) => launchRank(a) - launchRank(b))[0])
+// Cuenta regresiva: solo en el cliente (parte en null) para no desfasar la hidratación.
+const now = ref<number | null>(null)
+let tick: ReturnType<typeof setInterval> | undefined
+onMounted(() => {
+  now.value = Date.now()
+  tick = setInterval(() => (now.value = Date.now()), 1000)
+})
+onBeforeUnmount(() => clearInterval(tick))
+const pad = (n: number) => String(n).padStart(2, '0')
+const countdown = computed(() => {
+  const t = launch.value?.timer ? Date.parse(launch.value.timer) : Number.NaN
+  if (now.value === null || Number.isNaN(t) || t <= now.value)
+    return []
+  const s = Math.floor((t - now.value) / 1000)
+  return [
+    { label: 'días', value: Math.floor(s / 86400) },
+    { label: 'horas', value: Math.floor((s % 86400) / 3600) },
+    { label: 'min', value: Math.floor((s % 3600) / 60) },
+    { label: 'seg', value: s % 60 },
+  ]
+})
 const popular = computed(() => [...allCourses.value].filter(c => !c.coming_soon).sort((a, b) => b.students_count - a.students_count).slice(0, 3))
-const tabs = computed(() => ([
-  { id: 'nuevos', label: 'Nuevos lanzamientos', list: launches.value },
-  { id: 'populares', label: 'Más populares', list: popular.value },
-  { id: 'gratis', label: 'Gratis', list: freeCourses.value.slice(0, 3) },
-] as { id: Tab, label: string, list: PublicCourseCard[] }[]).filter(t => t.list.length))
-const shown = computed(() => tabs.value.find(t => t.id === tab.value) ?? tabs.value[0])
+const freeShown = computed(() => freeCourses.value.filter(c => !c.coming_soon).slice(0, 3))
+// Si la portada no carga, se muestran las iniciales del curso (p. ej. «OA_»).
+const launchImgFailed = ref(false)
+const launchInitials = computed(() => (launch.value?.title ?? '').split(/\s+/).filter(w => /^\p{L}/u.test(w)).slice(0, 2).map(w => w[0]!.toUpperCase()).join(''))
+watch(launch, () => (launchImgFailed.value = false))
+const hasFeatured = computed(() => !!launch.value || popular.value.length > 0 || freeShown.value.length > 0)
 
 // Artículos: el más reciente destacado y los tres siguientes.
 const articles = computed(() => articlesRes.value?.data ?? [])
@@ -104,7 +130,7 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
           </NuxtLink>
         </div>
         <p v-if="freeCourses.length" class="hero-sub bta-l-rise d3">
-          ¿Recién empiezas? <a href="#cursos" @click="tab = 'gratis'">Mira los cursos gratuitos →</a>
+          ¿Recién empiezas? <a href="#cursos-gratis">Mira los cursos gratuitos →</a>
         </p>
         <div v-if="stats.length" class="stats bta-l-rise d4">
           <div v-for="s in stats" :key="s.label" class="stat">
@@ -167,7 +193,7 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
     </section>
 
     <!-- CURSOS DESTACADOS -->
-    <section v-if="shown" id="cursos" class="sec isolate">
+    <section v-if="hasFeatured" id="cursos" class="sec isolate">
       <CyberBackground variant="grid" intensity="faint" glow="none" />
       <div class="wrap rel">
         <div class="sec-head">
@@ -186,22 +212,48 @@ const charlieSizes = '(max-width: 640px) calc(100vw - 64px), (max-width: 920px) 
             Ver los {{ coursesTotal }} cursos <span class="arr" aria-hidden="true">→</span>
           </NuxtLink>
         </div>
-        <div class="tabs" role="tablist" aria-label="Filtrar cursos">
-          <button
-            v-for="t in tabs"
-            :key="t.id"
-            type="button"
-            role="tab"
-            class="tab"
-            :class="{ on: shown.id === t.id }"
-            :aria-selected="shown.id === t.id"
-            @click="tab = t.id"
-          >
-            {{ t.label }}
-          </button>
+        <NuxtLink v-if="launch" :to="`/curso/${launch.slug}`" class="lb group" aria-label="Próximo lanzamiento">
+          <div class="cover lb-cover">
+            <img v-if="(launch.image_url || launch.image_thumb_url) && !launchImgFailed" :src="launch.image_url || launch.image_thumb_url!" :alt="launch.title" loading="lazy" decoding="async" @error="launchImgFailed = true">
+            <span v-else class="lb-ini" aria-hidden="true"><b>{{ launchInitials }}</b><i>_</i></span>
+          </div>
+          <div class="lb-body">
+            <span class="lb-chip"><span class="lb-dot" aria-hidden="true" />Próximamente</span>
+            <div v-if="launch.level" class="eyebrow">
+              {{ launch.level }}
+            </div>
+            <h3 class="lb-title">
+              {{ launch.title }}
+            </h3>
+            <p v-if="launch.summary" class="lb-sum">
+              {{ launch.summary }}
+            </p>
+            <div v-if="countdown.length" class="lb-count" role="timer" :aria-label="`Faltan ${countdown[0].value} días, ${countdown[1].value} horas y ${countdown[2].value} minutos`">
+              <div v-for="u in countdown" :key="u.label" class="lb-unit">
+                <span class="lb-num">{{ pad(u.value) }}</span>
+                <span class="lb-lbl">{{ u.label }}</span>
+              </div>
+            </div>
+            <span v-else class="lb-soon">Disponible muy pronto</span>
+          </div>
+        </NuxtLink>
+
+        <div v-if="popular.length" class="cgroup">
+          <h3 class="csub">
+            Más populares
+          </h3>
+          <div class="cgrid">
+            <CatalogCourseCard v-for="c in popular" :key="c.slug" :course="c" />
+          </div>
         </div>
-        <div class="cgrid" :class="{ two: shown.id === 'nuevos' }">
-          <CatalogCourseCard v-for="c in shown.list" :key="c.slug" :course="c" />
+
+        <div v-if="freeShown.length" id="cursos-gratis" class="cgroup">
+          <h3 class="csub">
+            Gratis
+          </h3>
+          <div class="cgrid">
+            <CatalogCourseCard v-for="c in freeShown" :key="c.slug" :course="c" />
+          </div>
         </div>
       </div>
     </section>

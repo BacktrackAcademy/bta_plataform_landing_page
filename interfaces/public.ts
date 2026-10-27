@@ -33,6 +33,8 @@ export interface PublicCourseCard {
   students_count: number
   is_free: boolean
   coming_soon: boolean
+  /** Fecha de lanzamiento (ISO 8601) de un próximo lanzamiento; alimenta la cuenta regresiva. */
+  timer?: string | null
   updated_at: string
 }
 

@@ -2,7 +2,11 @@
 import type { PublicCourseCard } from '~/interfaces/public'
 import { Eye, PlayCircle } from 'lucide-vue-next'
 
-defineProps<{ course: PublicCourseCard, priority?: boolean }>()
+const props = defineProps<{ course: PublicCourseCard, priority?: boolean }>()
+
+// Si la portada no carga, se muestran las iniciales del curso (p. ej. «OA_»).
+const imgFailed = ref(false)
+const initials = computed(() => props.course.title.split(/\s+/).filter(w => /^\p{L}/u.test(w)).slice(0, 2).map(w => w[0]!.toUpperCase()).join(''))
 </script>
 
 <template>
@@ -13,7 +17,7 @@ defineProps<{ course: PublicCourseCard, priority?: boolean }>()
     <!-- portada con velo oscuro y rejilla, como en la plataforma -->
     <div class="relative aspect-[16/8] overflow-hidden border-b border-[#262a47] bg-[#0b0d1f]">
       <img
-        v-if="course.image_thumb_url || course.image_url"
+        v-if="(course.image_thumb_url || course.image_url) && !imgFailed"
         :src="course.image_thumb_url || course.image_url!"
         :alt="course.title"
         width="640"
@@ -21,7 +25,9 @@ defineProps<{ course: PublicCourseCard, priority?: boolean }>()
         :loading="priority ? 'eager' : 'lazy'"
         decoding="async"
         class="gc-cover h-full w-full object-cover transition duration-300 ease-out group-hover:scale-[1.03]"
+        @error="imgFailed = true"
       >
+      <span v-else class="absolute inset-0 grid place-items-center font-oswald text-5xl font-medium tracking-widest text-white/25" aria-hidden="true">{{ initials }}<i class="text-bta-pink not-italic">_</i></span>
       <div class="gc-covertint" />
       <div class="absolute inset-0 bg-gradient-to-t from-[#12152b] via-[#12152b]/30 to-transparent" />
       <span
