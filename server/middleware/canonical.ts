@@ -7,18 +7,15 @@ export default defineEventHandler((event) => {
 
   const url = getRequestURL(event, { xForwardedHost: true, xForwardedProto: true })
   const site = new URL(origin)
-  let host = url.host
   let path = url.pathname
   let redirect = false
 
-  if (url.hostname === `www.${site.hostname}`) {
-    host = site.host
+  if (url.hostname === `www.${site.hostname}`)
     redirect = true
-  }
   if (path.length > 1 && path.endsWith('/')) {
     path = path.replace(/\/+$/, '') || '/'
     redirect = true
   }
   if (redirect)
-    return sendRedirect(event, `${site.protocol}//${host}${path}${url.search}`, 301)
+    return sendRedirect(event, `${origin}${path}${url.search}`, 301)
 })
