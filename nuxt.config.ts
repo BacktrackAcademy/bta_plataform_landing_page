@@ -31,19 +31,19 @@ export default defineNuxtConfig({
     },
   },
 
-  // El contenido sale de la API pública: se renderiza en el servidor (SEO) y se revalida en segundo plano,
+  // El contenido sale de la API pública: se renderiza en el servidor (SEO) y se revalida cada 5 min (isr: en Vercel `swr: 300` se vuelve isr:true, sin expiración),
   // así un artículo nuevo aparece sin redeploy y la API no recibe un request por visita.
   routeRules: {
-    '/': { swr: 300 },
-    '/cursos': { swr: 300 },
-    '/curso/**': { swr: 300 },
-    '/especialidades': { swr: 300 },
-    '/especialidad/**': { swr: 300 },
-    '/articulos': { swr: 300 },
-    '/articulos/**': { swr: 300 },
-    '/articulo/**': { swr: 300 },
-    '/autor/**': { swr: 300 },
-    '/precios': { swr: 300 },
+    '/': { isr: 300 },
+    '/cursos': { isr: 300 },
+    '/curso/**': { isr: 300 },
+    '/especialidades': { isr: 300 },
+    '/especialidad/**': { isr: 300 },
+    '/articulos': { isr: 300 },
+    '/articulos/**': { isr: 300 },
+    '/articulo/**': { isr: 300 },
+    '/autor/**': { isr: 300 },
+    '/precios': { isr: 300 },
     '/**': {
       headers: {
         'X-Content-Type-Options': 'nosniff',
