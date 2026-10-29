@@ -8,7 +8,7 @@ interface FiltersPayload {
   discussion_categories: { slug: string }[]
 }
 
-const STATIC_PAGES = ['/', '/cursos', '/especialidades', '/articulos', '/debates', '/precios', '/team', '/security', '/preguntas-frecuentes', '/privacy_policy', '/terms_of_use']
+const STATIC_PAGES = ['/', '/cursos', '/especialidades', '/articulos', '/debates', '/skills', '/precios', '/team', '/security', '/preguntas-frecuentes', '/privacy_policy', '/terms_of_use']
 
 // /sitemaps/paginas.xml  → estáticas + listados por tema/especialidad/nivel/categoría
 // /sitemaps/cursos-2.xml → página 2 de cursos (ver SITEMAP_TYPES)

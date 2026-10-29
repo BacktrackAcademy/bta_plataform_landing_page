@@ -173,3 +173,44 @@ export function profilePageSchema(abs: Abs, p: {
     },
   }
 }
+
+/** Skill / prompt de la biblioteca como schema.org SoftwareSourceCode (contenido de la comunidad). */
+export function skillSchema(abs: Abs, s: {
+  path: string
+  name: string
+  description: string
+  author: { name: string, path?: string | null }
+  published?: string | null
+  modified?: string | null
+  keywords?: string[]
+  license?: string | null
+  repository?: string | null
+  version?: string | null
+  rating?: { average: number | null, count: number } | null
+  downloads?: number
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareSourceCode',
+    'name': s.name,
+    'description': s.description,
+    'url': abs(s.path),
+    'inLanguage': 'es',
+    'author': s.author.path
+      ? { '@type': 'Person', 'name': s.author.name, 'url': abs(s.author.path) }
+      : { '@type': 'Person', 'name': s.author.name },
+    'publisher': { '@id': abs('/#organization') },
+    'datePublished': s.published || undefined,
+    'dateModified': s.modified || undefined,
+    'keywords': s.keywords?.length ? s.keywords.join(', ') : undefined,
+    'license': s.license || undefined,
+    'codeRepository': s.repository || undefined,
+    'version': s.version || undefined,
+    'interactionStatistic': s.downloads
+      ? { '@type': 'InteractionCounter', 'interactionType': 'https://schema.org/DownloadAction', 'userInteractionCount': s.downloads }
+      : undefined,
+    'aggregateRating': s.rating?.count && s.rating.average
+      ? { '@type': 'AggregateRating', 'ratingValue': s.rating.average, 'ratingCount': s.rating.count }
+      : undefined,
+  }
+}

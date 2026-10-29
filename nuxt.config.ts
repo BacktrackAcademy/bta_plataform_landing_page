@@ -43,6 +43,8 @@ export default defineNuxtConfig({
     '/articulos/**': { swr: 300 },
     '/articulo/**': { swr: 300 },
     '/autor/**': { swr: 300 },
+    '/skills': { swr: 300 },
+    '/skills/**': { swr: 300 },
     '/precios': { swr: 300 },
     '/**': {
       headers: {
