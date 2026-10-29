@@ -9,6 +9,7 @@ const links = [
   { name: 'Cursos', to: '/cursos', match: ['/cursos', '/curso'] },
   { name: 'Especialidades', to: '/especialidades', match: ['/especialidades', '/especialidad'] },
   { name: 'Artículos', to: '/articulos', match: ['/articulos', '/articulo', '/autor'] },
+  { name: 'Skills', to: '/skills', match: ['/skills'] },
   { name: 'Planes', to: '/precios', match: ['/precios'] },
 ]
 

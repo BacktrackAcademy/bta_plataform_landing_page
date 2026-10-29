@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { SkillCard } from '~/interfaces/skills'
 import { Award, FileText, MessageCircle } from 'lucide-vue-next'
 
 // Perfil público (/@usuario): mismas rutas que Rails para conservar el SEO. Privados = 404 idéntico a un usuario inexistente.
@@ -13,6 +14,7 @@ interface Profile {
   indexable: boolean
   stats: { ranking: number | null, certificates: number, articles: number, questions: number, courses_taught: number, followers: number }
   specialties: string[]
+  skills_library?: { count: number, downloads: number, rating_average: number | null, categories: { name: string, slug: string }[], items: SkillCard[] }
   links: Record<string, string>
   activity: {
     articles: { title: string, slug: string, category: string | null }[]
@@ -113,6 +115,27 @@ useSeo(() => ({
             </NuxtLink>
           </li>
         </ul>
+      </section>
+      <section v-if="p.skills_library?.count" class="mt-12">
+        <h2 class="font-oswald text-2xl font-medium">
+          Skills publicadas
+        </h2>
+        <p class="mt-2 text-sm text-white/55">
+          {{ p.skills_library.count }} {{ p.skills_library.count === 1 ? 'skill' : 'skills' }} · {{ compactNumber(p.skills_library.downloads) }} descargas<template v-if="p.skills_library.rating_average">
+            · ★ {{ p.skills_library.rating_average }}
+          </template>
+          <template v-if="p.skills_library.categories.length">
+            · <NuxtLink v-for="(c, i) in p.skills_library.categories" :key="c.slug" :to="`/skills/categoria/${c.slug}`" class="hover:text-bta-pink">
+              {{ c.name }}{{ i < p.skills_library.categories.length - 1 ? ', ' : '' }}
+            </NuxtLink>
+          </template>
+        </p>
+        <div class="mt-5 grid gap-6 sm:grid-cols-2">
+          <CatalogSkillCard v-for="sk in p.skills_library.items" :key="sk.slug" :skill="sk" />
+        </div>
+        <NuxtLink :to="`/skills/autor/${encodeURIComponent(p.username)}`" class="mt-4 inline-block text-bta-pink hover:underline">
+          Ver todas sus skills
+        </NuxtLink>
       </section>
       <section v-if="p.activity.questions.length" class="mt-12">
         <h2 class="font-oswald text-2xl font-medium">

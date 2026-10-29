@@ -11,6 +11,8 @@ export const SITEMAP_TYPES: Record<string, { type: string, toPath: (slug: string
   articulos: { type: 'articles', toPath: s => `/articulo/${encodeURIComponent(s)}` },
   debates: { type: 'discussions', toPath: s => `/debate/${encodeURIComponent(s)}` },
   autores: { type: 'authors', toPath: s => `/autor/${encodeURIComponent(s)}` },
+  skills: { type: 'skills', toPath: s => `/skills/${encodeURIComponent(s)}` },
+  skillcategorias: { type: 'skill_categories', toPath: s => `/skills/categoria/${encodeURIComponent(s)}` },
   perfiles: { type: 'profiles', toPath: s => `/@${encodeURIComponent(s)}` },
 }
 
