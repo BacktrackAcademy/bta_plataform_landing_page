@@ -148,6 +148,10 @@ const btnPrimary = 'inline-flex h-12 items-center justify-center gap-2 rounded-m
 
       <!-- Cuerpo: el campo Descripción no se muestra; el contenido empieza directo después de la información. -->
       <div ref="bodyEl" class="ar-col ar-body">
+        <!-- Portada visible dentro del artículo (en el hero va atenuada de fondo) -->
+        <figure v-if="a.image_url" class="mb-10 overflow-hidden rounded-lg border border-white/10">
+          <img :src="a.image_url" :alt="a.title" width="1280" height="720" decoding="async" class="h-auto w-full object-cover">
+        </figure>
         <CatalogRichText v-if="parts[0]" :html="parts[0]" class="prose-lg prose-headings:scroll-mt-28 prose-img:rounded-lg prose-pre:overflow-x-auto" />
 
         <!-- CTA a mitad de lectura: discreto, solo en artículos largos -->
